@@ -137,3 +137,5 @@ function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }
     </div>
   );
 }
+
+export default ChatPanel;
