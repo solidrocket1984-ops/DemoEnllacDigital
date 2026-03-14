@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { translations, scenarioMap } from "../components/demo-celler/translations";
 import DemoHeader from "../components/demo-celler/DemoHeader";
 import HeroSection from "../components/demo-celler/HeroSection";
@@ -16,7 +16,7 @@ export default function DemoCeller() {
   const [messages, setMessages] = useState([]);
   const [leadData, setLeadData] = useState({});
   const demoRef = useRef(null);
-  const chatPanelRef = useRef(null);
+
 
   const t = translations[lang];
 
@@ -133,7 +133,6 @@ export default function DemoCeller() {
             {/* Center: Chat */}
             <div className="lg:col-span-5">
               <ChatPanel
-                ref={chatPanelRef}
                 t={t}
                 lang={lang}
                 scenario={scenario}
