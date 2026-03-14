@@ -6,7 +6,9 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 // Add page imports here
-import DemoCeller from './pages/DemoCeller';
+import PublicDemoPage from './pages/PublicDemoPage';
+import AdminWineries from './pages/AdminWineries';
+import AdminWineryEdit from './pages/AdminWineryEdit';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -35,8 +37,10 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Add your page Route elements here */}
-      <Route path="/" element={<Navigate to="/demo-celler" replace />} />
-      <Route path="/demo-celler" element={<DemoCeller />} />
+      <Route path="/" element={<Navigate to="/demo" replace />} />
+      <Route path="/demo" element={<PublicDemoPage />} />
+      <Route path="/admin/wineries" element={<AdminWineries />} />
+      <Route path="/admin/winery/:id" element={<AdminWineryEdit />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
