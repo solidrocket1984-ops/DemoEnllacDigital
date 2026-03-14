@@ -1,10 +1,15 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Wine, Eye, Settings, LayoutGrid } from "lucide-react";
+import { Wine, Eye, Settings, LayoutGrid, Sparkles, HelpCircle, BarChart3 } from "lucide-react";
 
 const navItems = [
+  { path: "/admin", label: "Dashboard", icon: LayoutGrid },
   { path: "/admin/wineries", label: "Bodegues", icon: Wine },
-  { path: "/demo", label: "Veure demo pública", icon: Eye },
+  { path: "/admin/experiences", label: "Experiències", icon: Sparkles },
+  { path: "/admin/faqs", label: "FAQs", icon: HelpCircle },
+  { path: "/admin/simulation", label: "Simulació", icon: BarChart3 },
+  { path: "/admin/settings", label: "Ajustos", icon: Settings },
+  { path: "/demo", label: "Demo pública", icon: Eye },
 ];
 
 export default function AdminLayout({ children }) {
@@ -25,15 +30,17 @@ export default function AdminLayout({ children }) {
               </div>
             </div>
 
-            <nav className="hidden md:flex items-center gap-2">
-              {navItems.map((item) => {
+            <nav className="hidden lg:flex items-center gap-1">
+              {navItems.slice(0, -1).map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname.startsWith(item.path);
+                const isActive = item.path === "/admin" 
+                  ? location.pathname === "/admin"
+                  : location.pathname.startsWith(item.path);
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                       isActive
                         ? "bg-[#722F37] text-white shadow-md"
                         : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
@@ -44,6 +51,13 @@ export default function AdminLayout({ children }) {
                   </Link>
                 );
               })}
+              <Link
+                to="/demo"
+                className="ml-2 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-600 hover:bg-slate-100 transition-all"
+              >
+                <Eye className="w-4 h-4" />
+                Demo pública
+              </Link>
             </nav>
           </div>
         </div>
@@ -53,21 +67,23 @@ export default function AdminLayout({ children }) {
         {children}
       </main>
 
-      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-stone-200 shadow-lg z-40">
-        <div className="flex items-center justify-around py-3 px-2">
-          {navItems.map((item) => {
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-stone-200 shadow-lg z-40">
+        <div className="grid grid-cols-4 gap-1 py-2 px-2">
+          {[navItems[0], navItems[1], navItems[4], navItems[6]].map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.path);
+            const isActive = item.path === "/admin" 
+              ? location.pathname === "/admin"
+              : location.pathname.startsWith(item.path);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                  isActive ? "text-[#722F37]" : "text-slate-600"
+                className={`flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                  isActive ? "text-[#722F37] bg-[#722F37]/5" : "text-slate-600"
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span>{item.label.split(" ")[0]}</span>
+                <span className="text-[10px]">{item.label}</span>
               </Link>
             );
           })}

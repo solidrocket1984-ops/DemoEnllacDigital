@@ -7,8 +7,13 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 // Add page imports here
 import PublicDemoPage from './pages/PublicDemoPage';
+import AdminDashboard from './pages/AdminDashboard';
 import AdminWineries from './pages/AdminWineries';
 import AdminWineryEdit from './pages/AdminWineryEdit';
+import AdminExperiences from './pages/AdminExperiences';
+import AdminFAQs from './pages/AdminFAQs';
+import AdminSimulation from './pages/AdminSimulation';
+import AdminSettings from './pages/AdminSettings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,8 +44,13 @@ const AuthenticatedApp = () => {
       {/* Add your page Route elements here */}
       <Route path="/" element={<Navigate to="/demo" replace />} />
       <Route path="/demo" element={<PublicDemoPage />} />
+      <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/wineries" element={<AdminWineries />} />
       <Route path="/admin/winery/:id" element={<AdminWineryEdit />} />
+      <Route path="/admin/experiences" element={<AdminExperiences />} />
+      <Route path="/admin/faqs" element={<AdminFAQs />} />
+      <Route path="/admin/simulation" element={<AdminSimulation />} />
+      <Route path="/admin/settings" element={<AdminSettings />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
