@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, Loader2 } from "lucide-react";
-import ChatBubble from "./ChatBubble";
+import ChatBubble from "./ChatBubble.jsx";
 
 export default function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse, pendingExample, clearPendingExample }) {
   const [input, setInput] = useState("");
