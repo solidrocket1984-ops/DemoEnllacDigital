@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft, Eye } from "lucide-react";
 import { toast } from "sonner";
 import AdminLayout from "./AdminLayout";
 
