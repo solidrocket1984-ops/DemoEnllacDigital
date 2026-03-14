@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Save, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import AdminLayout from "./AdminLayout";
 
 export default function WineryForm({ wineryId }) {
   const navigate = useNavigate();
@@ -97,7 +98,8 @@ export default function WineryForm({ wineryId }) {
   const update = (field, value) => setData((prev) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <AdminLayout>
+      <div className="max-w-5xl mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate("/admin/wineries")}>
@@ -117,84 +119,84 @@ export default function WineryForm({ wineryId }) {
       </div>
 
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-7 mb-6">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="marca">Marca</TabsTrigger>
-          <TabsTrigger value="comercial">Comercial</TabsTrigger>
-          <TabsTrigger value="faqs">FAQs</TabsTrigger>
-          <TabsTrigger value="experiencies">Experiències</TabsTrigger>
-          <TabsTrigger value="regles">Regles IA</TabsTrigger>
-          <TabsTrigger value="coneixement">Coneixement</TabsTrigger>
+        <TabsList className="w-full mb-6 h-auto flex-wrap gap-2 bg-white border border-stone-200 p-2 rounded-xl shadow-sm">
+          <TabsTrigger value="general" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">General</TabsTrigger>
+          <TabsTrigger value="marca" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Marca</TabsTrigger>
+          <TabsTrigger value="comercial" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Comercial</TabsTrigger>
+          <TabsTrigger value="faqs" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">FAQs</TabsTrigger>
+          <TabsTrigger value="experiencies" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Experiències</TabsTrigger>
+          <TabsTrigger value="regles" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Regles IA</TabsTrigger>
+          <TabsTrigger value="coneixement" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Coneixement</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label>Nom de la bodega *</Label>
-                <Input value={data.nombre} onChange={(e) => update("nombre", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Nom de la bodega *</Label>
+                <Input value={data.nombre} onChange={(e) => update("nombre", e.target.value)} className="h-11" />
               </div>
               <div>
-                <Label>Slug *</Label>
-                <Input value={data.slug} onChange={(e) => update("slug", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Slug *</Label>
+                <Input value={data.slug} onChange={(e) => update("slug", e.target.value)} className="h-11" />
               </div>
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row gap-4 p-4 bg-stone-50 rounded-lg border border-stone-200">
               <div className="flex items-center gap-2">
-                <Switch checked={data.activa} onCheckedChange={(v) => update("activa", v)} />
-                <Label>Activa</Label>
+                <Switch checked={data.activa} onCheckedChange={(v) => update("activa", v)} id="activa" />
+                <Label htmlFor="activa" className="text-sm font-medium cursor-pointer">Activa</Label>
               </div>
               <div className="flex items-center gap-2">
-                <Switch checked={data.demo_publica} onCheckedChange={(v) => update("demo_publica", v)} />
-                <Label>Usar en demo pública</Label>
+                <Switch checked={data.demo_publica} onCheckedChange={(v) => update("demo_publica", v)} id="demo" />
+                <Label htmlFor="demo" className="text-sm font-medium cursor-pointer">Usar en demo pública</Label>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label>Telèfon</Label>
-                <Input value={data.telefono} onChange={(e) => update("telefono", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Telèfon</Label>
+                <Input value={data.telefono} onChange={(e) => update("telefono", e.target.value)} className="h-11" />
               </div>
               <div>
-                <Label>Email</Label>
-                <Input value={data.email} onChange={(e) => update("email", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Email</Label>
+                <Input value={data.email} onChange={(e) => update("email", e.target.value)} className="h-11" />
               </div>
               <div>
-                <Label>Web</Label>
-                <Input value={data.web} onChange={(e) => update("web", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Web</Label>
+                <Input value={data.web} onChange={(e) => update("web", e.target.value)} className="h-11" />
               </div>
               <div>
-                <Label>WhatsApp</Label>
-                <Input value={data.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">WhatsApp</Label>
+                <Input value={data.whatsapp} onChange={(e) => update("whatsapp", e.target.value)} className="h-11" />
               </div>
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="marca" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6 space-y-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-5">
             <div>
-              <Label>Història breu</Label>
-              <Textarea rows={3} value={data.historia_breve} onChange={(e) => update("historia_breve", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Història breu</Label>
+              <Textarea rows={4} value={data.historia_breve} onChange={(e) => update("historia_breve", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Descripció curta comercial</Label>
-              <Textarea rows={2} value={data.descripcion_corta} onChange={(e) => update("descripcion_corta", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Descripció curta comercial</Label>
+              <Textarea rows={3} value={data.descripcion_corta} onChange={(e) => update("descripcion_corta", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>To de marca</Label>
-              <Input value={data.tono_marca} onChange={(e) => update("tono_marca", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">To de marca</Label>
+              <Input value={data.tono_marca} onChange={(e) => update("tono_marca", e.target.value)} className="h-11" />
             </div>
             <div>
-              <Label>Estil de resposta de l'assistent</Label>
-              <Input value={data.estilo_respuesta} onChange={(e) => update("estilo_respuesta", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Estil de resposta de l'assistent</Label>
+              <Input value={data.estilo_respuesta} onChange={(e) => update("estilo_respuesta", e.target.value)} className="h-11" />
             </div>
             <div>
-              <Label>Públic ideal</Label>
-              <Input value={data.publico_ideal} onChange={(e) => update("publico_ideal", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Públic ideal</Label>
+              <Input value={data.publico_ideal} onChange={(e) => update("publico_ideal", e.target.value)} className="h-11" />
             </div>
             <div>
-              <Label>Proposta de valor</Label>
-              <Textarea rows={2} value={data.propuesta_valor} onChange={(e) => update("propuesta_valor", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Proposta de valor</Label>
+              <Textarea rows={3} value={data.propuesta_valor} onChange={(e) => update("propuesta_valor", e.target.value)} className="resize-none" />
             </div>
           </div>
         </TabsContent>
@@ -319,6 +321,7 @@ export default function WineryForm({ wineryId }) {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

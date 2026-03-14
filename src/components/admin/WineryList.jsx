@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Plus, Edit, Eye, Search, CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AdminLayout from "./AdminLayout";
 
 export default function WineryList() {
   const [search, setSearch] = useState("");
@@ -19,7 +20,8 @@ export default function WineryList() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <AdminLayout>
+      <div className="max-w-6xl mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Gestió de cellers</h1>
@@ -104,6 +106,7 @@ export default function WineryList() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
