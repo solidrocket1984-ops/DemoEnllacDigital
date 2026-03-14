@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, forwardRef } from "react";
 import { Send, Loader2 } from "lucide-react";
 import ChatBubble from "./ChatBubble";
 
-export default function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }) {
+function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
