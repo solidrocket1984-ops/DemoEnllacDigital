@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { Send, Loader2 } from "lucide-react";
 import ChatBubble from "./ChatBubble.jsx";
 
-export default function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse, pendingExample, clearPendingExample }) {
+export default function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse, pendingExample, clearPendingExample, winery, experiences }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
@@ -32,36 +33,61 @@ export default function ChatPanel({ t, lang, scenario, messages, setMessages, on
     if (!text) setInput("");
     setLoading(true);
 
-    const payload = {
-      language: lang,
-      scenario: scenario || "libre",
-      winery: { name: "Celler Demo" },
-      experiences: [
-        {
-          id: "exp_1",
-          title_ca: "Tast amb maridatge",
-          title_es: "Cata con maridaje",
-          title_en: "Wine tasting with pairing",
-          price: 42,
-        },
-      ],
-      lead: { name: "", phone: "", email: "" },
-      messages: newMessages
-        .filter((m) => m.role === "user" || m.role === "assistant")
-        .map((m) => ({ role: m.role, content: m.content })),
-    };
-
     try {
-      const res = await fetch("https://enllac-agent.onrender.com/", {
+      const settings = await base44.entities.AppSettings.list();
+      const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
+      const agentUrl = urlSetting?.value || "https://enllac-agent.onrender.com/";
+
+      const payload = {
+        language: lang,
+        scenario: scenario || "libre",
+        winery: {
+          name: winery?.nombre || "Celler Demo",
+          slug: winery?.slug || "demo",
+          brand_tone: winery?.tono_marca || "",
+          brief_history: winery?.historia_breve || "",
+          short_description: winery?.descripcion_corta || "",
+          value_proposition: winery?.propuesta_valor || "",
+          faqs: winery?.faqs_texto || "",
+          recommendation_rules: winery?.reglas_recomendacion || "",
+          objection_rules: winery?.reglas_objeciones || "",
+        },
+        experiences: (experiences || []).map((exp) => ({
+          id: exp.experience_id,
+          title_ca: exp.nombre_ca,
+          title_es: exp.nombre_es,
+          title_en: exp.nombre_en,
+          description_ca: exp.descripcion_ca,
+          description_es: exp.descripcion_es,
+          description_en: exp.descripcion_en,
+          price: exp.precio,
+          currency: exp.moneda || "EUR",
+          duration: exp.duracion,
+          min_people: exp.minimo_personas,
+          max_people: exp.maximo_personas,
+        })),
+        lead: { name: "", phone: "", email: "" },
+        messages: newMessages
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .map((m) => ({ role: m.role, content: m.content })),
+      };
+
+      const res = await fetch(agentUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error ${res.status}`);
+      }
+
       const data = await res.json();
       const assistantMsg = { role: "assistant", content: data.reply_text || "..." };
       setMessages((prev) => [...prev, assistantMsg]);
       if (onAgentResponse) onAgentResponse(data);
-    } catch {
+    } catch (error) {
+      console.error("Error calling agent:", error);
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Ho sentim, hi ha hagut un error de connexió. Torna-ho a provar." },

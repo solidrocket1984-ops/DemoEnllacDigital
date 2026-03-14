@@ -1,7 +1,10 @@
 import React from "react";
-import { Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Phone, Mail, Lock } from "lucide-react";
 
-export default function DemoFooter({ t }) {
+const internalLabels = { ca: "Accés intern", es: "Acceso interno", en: "Internal access" };
+
+export default function DemoFooter({ t, lang = "ca" }) {
   return (
     <footer className="bg-[#2D1B14] text-stone-300 py-10">
       <div className="max-w-5xl mx-auto px-4">
@@ -22,6 +25,10 @@ export default function DemoFooter({ t }) {
             <a href="mailto:info@enlacdigital.cat" className="flex items-center gap-2 text-xs hover:text-white transition-colors">
               <Mail className="w-3.5 h-3.5" /> info@enlacdigital.cat
             </a>
+            <Link to="/admin" className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-200 transition-colors">
+              <Lock className="w-3 h-3" />
+              {internalLabels[lang]}
+            </Link>
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-stone-800 text-center">
