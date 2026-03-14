@@ -1,8 +1,8 @@
-import React, { useState, useRef, useEffect, forwardRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Send, Loader2 } from "lucide-react";
 import ChatBubble from "./ChatBubble";
 
-function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }) {
+export default function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse, pendingExample, clearPendingExample }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
@@ -14,10 +14,13 @@ function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }
     }
   }, [messages, loading]);
 
-  // Allow parent to set input from examples
+  // Handle pending example from parent
   useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
+    if (pendingExample && !loading) {
+      sendMessage(pendingExample);
+      clearPendingExample();
+    }
+  }, [pendingExample]);
 
   const sendMessage = async (text) => {
     const trimmed = (text || input).trim();
@@ -26,7 +29,7 @@ function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }
     const userMsg = { role: "user", content: trimmed };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
-    setInput("");
+    if (!text) setInput("");
     setLoading(true);
 
     const payload = {
@@ -43,10 +46,9 @@ function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }
         },
       ],
       lead: { name: "", phone: "", email: "" },
-      messages: newMessages.filter((m) => m.role === "user" || m.role === "assistant").map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
+      messages: newMessages
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({ role: m.role, content: m.content })),
     };
 
     try {
@@ -56,17 +58,10 @@ function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-
-      const assistantMsg = {
-        role: "assistant",
-        content: data.reply_text || "...",
-      };
+      const assistantMsg = { role: "assistant", content: data.reply_text || "..." };
       setMessages((prev) => [...prev, assistantMsg]);
-
-      if (onAgentResponse) {
-        onAgentResponse(data);
-      }
-    } catch (err) {
+      if (onAgentResponse) onAgentResponse(data);
+    } catch {
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Ho sentim, hi ha hagut un error de connexió. Torna-ho a provar." },
@@ -137,5 +132,3 @@ function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse }
     </div>
   );
 }
-
-export default ChatPanel;
