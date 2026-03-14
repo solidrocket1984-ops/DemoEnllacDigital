@@ -202,121 +202,133 @@ export default function WineryForm({ wineryId }) {
         </TabsContent>
 
         <TabsContent value="comercial" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6 space-y-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-5">
             <div>
-              <Label>Horaris</Label>
-              <Textarea rows={2} value={data.horarios} onChange={(e) => update("horarios", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Horaris</Label>
+              <Textarea rows={3} value={data.horarios} onChange={(e) => update("horarios", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Política de reserves</Label>
-              <Textarea rows={2} value={data.politica_reservas} onChange={(e) => update("politica_reservas", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Política de reserves</Label>
+              <Textarea rows={3} value={data.politica_reservas} onChange={(e) => update("politica_reservas", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Política de cancel·lació</Label>
-              <Textarea rows={2} value={data.politica_cancelacion} onChange={(e) => update("politica_cancelacion", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Política de cancel·lació</Label>
+              <Textarea rows={3} value={data.politica_cancelacion} onChange={(e) => update("politica_cancelacion", e.target.value)} className="resize-none" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label>Parking</Label>
-                <Input value={data.parking} onChange={(e) => update("parking", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Parking</Label>
+                <Input value={data.parking} onChange={(e) => update("parking", e.target.value)} className="h-11" />
               </div>
               <div>
-                <Label>Accessibilitat</Label>
-                <Input value={data.accesibilidad} onChange={(e) => update("accesibilidad", e.target.value)} />
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Accessibilitat</Label>
+                <Input value={data.accesibilidad} onChange={(e) => update("accesibilidad", e.target.value)} className="h-11" />
               </div>
             </div>
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <Switch checked={data.acepta_eventos_privados} onCheckedChange={(v) => update("acepta_eventos_privados", v)} />
-                <Label>Events privats</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={data.acepta_regalos} onCheckedChange={(v) => update("acepta_regalos", v)} />
-                <Label>Regals</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={data.acepta_grupos} onCheckedChange={(v) => update("acepta_grupos", v)} />
-                <Label>Grups</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={data.acepta_empresas} onCheckedChange={(v) => update("acepta_empresas", v)} />
-                <Label>Empreses</Label>
+            <div className="p-4 bg-stone-50 rounded-lg border border-stone-200">
+              <Label className="text-sm font-semibold text-slate-700 mb-3 block">Serveis disponibles</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <Switch checked={data.acepta_eventos_privados} onCheckedChange={(v) => update("acepta_eventos_privados", v)} id="eventos" />
+                  <Label htmlFor="eventos" className="text-sm font-medium cursor-pointer">Events privats</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={data.acepta_regalos} onCheckedChange={(v) => update("acepta_regalos", v)} id="regalos" />
+                  <Label htmlFor="regalos" className="text-sm font-medium cursor-pointer">Regals</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={data.acepta_grupos} onCheckedChange={(v) => update("acepta_grupos", v)} id="grupos" />
+                  <Label htmlFor="grupos" className="text-sm font-medium cursor-pointer">Grups</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={data.acepta_empresas} onCheckedChange={(v) => update("acepta_empresas", v)} id="empresas" />
+                  <Label htmlFor="empresas" className="text-sm font-medium cursor-pointer">Empreses</Label>
+                </div>
               </div>
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="faqs" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6">
-            <Label>FAQs (text lliure)</Label>
-            <Textarea rows={12} value={data.faqs_texto} onChange={(e) => update("faqs_texto", e.target.value)} placeholder="Enganxa aquí les FAQs en text lliure..." />
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
+            <Label className="text-sm font-semibold text-slate-700 mb-2 block">FAQs (text lliure)</Label>
+            <Textarea rows={16} value={data.faqs_texto} onChange={(e) => update("faqs_texto", e.target.value)} placeholder="Enganxa aquí les FAQs en text lliure..." className="resize-none font-mono text-sm" />
+            <p className="text-xs text-slate-500 mt-2">Pots enganxar aquí les FAQs de la bodega en format text lliure.</p>
           </div>
         </TabsContent>
 
         <TabsContent value="experiencies" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6">
-            <p className="text-sm text-slate-600">Les experiències es gestionen a la secció independent "Experiències"</p>
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm text-center py-12">
+            <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
+              <Eye className="w-7 h-7 text-stone-400" />
+            </div>
+            <p className="text-sm font-medium text-slate-700 mb-2">Experiències de la bodega</p>
+            <p className="text-sm text-slate-500 mb-6">Les experiències es gestionen en una secció independent per a millor organització</p>
+            <Button variant="outline" className="gap-2">
+              <Eye className="w-4 h-4" />
+              Gestionar experiències
+            </Button>
           </div>
         </TabsContent>
 
         <TabsContent value="regles" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6 space-y-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-5">
             <div>
-              <Label>Com recomanar experiències</Label>
-              <Textarea rows={3} value={data.reglas_recomendacion} onChange={(e) => update("reglas_recomendacion", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Com recomanar experiències</Label>
+              <Textarea rows={4} value={data.reglas_recomendacion} onChange={(e) => update("reglas_recomendacion", e.target.value)} className="resize-none" placeholder="Ex: Recomanar primer les experiències premium si detectes interès..." />
             </div>
             <div>
-              <Label>Com resoldre objeccions</Label>
-              <Textarea rows={3} value={data.reglas_objeciones} onChange={(e) => update("reglas_objeciones", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Com resoldre objeccions</Label>
+              <Textarea rows={4} value={data.reglas_objeciones} onChange={(e) => update("reglas_objeciones", e.target.value)} className="resize-none" placeholder="Ex: Si l'objecció és el preu, destacar el valor de l'experiència..." />
             </div>
             <div>
-              <Label>Quan demanar dades de contacte</Label>
-              <Textarea rows={2} value={data.cuando_pedir_contacto} onChange={(e) => update("cuando_pedir_contacto", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Quan demanar dades de contacte</Label>
+              <Textarea rows={3} value={data.cuando_pedir_contacto} onChange={(e) => update("cuando_pedir_contacto", e.target.value)} className="resize-none" placeholder="Ex: Després de mostrar interès en una experiència concreta..." />
             </div>
             <div>
-              <Label>Quan intentar tancar reserva</Label>
-              <Textarea rows={2} value={data.cuando_cerrar_reserva} onChange={(e) => update("cuando_cerrar_reserva", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Quan intentar tancar reserva</Label>
+              <Textarea rows={3} value={data.cuando_cerrar_reserva} onChange={(e) => update("cuando_cerrar_reserva", e.target.value)} className="resize-none" placeholder="Ex: Quan l'usuari pregunta disponibilitat o horaris..." />
             </div>
             <div>
-              <Label>Què evitar dir</Label>
-              <Textarea rows={2} value={data.que_evitar} onChange={(e) => update("que_evitar", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Què evitar dir</Label>
+              <Textarea rows={3} value={data.que_evitar} onChange={(e) => update("que_evitar", e.target.value)} className="resize-none" placeholder="Ex: No dir 'no sabem', evitar paraules genèriques..." />
             </div>
             <div>
-              <Label>Com ha de sonar l'assistent</Label>
-              <Textarea rows={2} value={data.como_sonar} onChange={(e) => update("como_sonar", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Com ha de sonar l'assistent</Label>
+              <Textarea rows={3} value={data.como_sonar} onChange={(e) => update("como_sonar", e.target.value)} className="resize-none" placeholder="Ex: Càlid, proper, professional, amb to acollidor..." />
             </div>
           </div>
         </TabsContent>
 
         <TabsContent value="coneixement" className="space-y-4">
-          <div className="bg-white border rounded-xl p-6 space-y-4">
+          <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-5">
             <div>
-              <Label>Història ampliada</Label>
-              <Textarea rows={4} value={data.historia_ampliada} onChange={(e) => update("historia_ampliada", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Història ampliada</Label>
+              <Textarea rows={5} value={data.historia_ampliada} onChange={(e) => update("historia_ampliada", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Detalls de producte</Label>
-              <Textarea rows={4} value={data.detalles_producto} onChange={(e) => update("detalles_producto", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Detalls de producte</Label>
+              <Textarea rows={5} value={data.detalles_producto} onChange={(e) => update("detalles_producto", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Arguments de venda</Label>
-              <Textarea rows={3} value={data.argumentos_venta} onChange={(e) => update("argumentos_venta", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Arguments de venda</Label>
+              <Textarea rows={4} value={data.argumentos_venta} onChange={(e) => update("argumentos_venta", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Objeccions freqüents i resposta</Label>
-              <Textarea rows={3} value={data.objeciones_frecuentes} onChange={(e) => update("objeciones_frecuentes", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Objeccions freqüents i resposta</Label>
+              <Textarea rows={4} value={data.objeciones_frecuentes} onChange={(e) => update("objeciones_frecuentes", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Informació de maridatges</Label>
-              <Textarea rows={3} value={data.info_maridajes} onChange={(e) => update("info_maridajes", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Informació de maridatges</Label>
+              <Textarea rows={4} value={data.info_maridajes} onChange={(e) => update("info_maridajes", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Informació de botiga / vins</Label>
-              <Textarea rows={3} value={data.info_tienda} onChange={(e) => update("info_tienda", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Informació de botiga / vins</Label>
+              <Textarea rows={4} value={data.info_tienda} onChange={(e) => update("info_tienda", e.target.value)} className="resize-none" />
             </div>
             <div>
-              <Label>Notes internes</Label>
-              <Textarea rows={3} value={data.notas_internas} onChange={(e) => update("notas_internas", e.target.value)} />
+              <Label className="text-sm font-semibold text-slate-700 mb-2 block">Notes internes</Label>
+              <Textarea rows={4} value={data.notas_internas} onChange={(e) => update("notas_internas", e.target.value)} className="resize-none" placeholder="Notes privades d'ús intern..." />
             </div>
           </div>
         </TabsContent>

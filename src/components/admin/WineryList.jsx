@@ -22,13 +22,13 @@ export default function WineryList() {
   return (
     <AdminLayout>
       <div className="max-w-6xl mx-auto px-4">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Gestió de cellers</h1>
-          <p className="text-sm text-slate-500 mt-1">Configura les dades de cada bodega per personalitzar l'assistent</p>
+          <h1 className="text-2xl font-bold text-slate-900">Bodegues configurades</h1>
+          <p className="text-sm text-slate-500 mt-1">Gestiona la configuració de cada celler per personalitzar l'assistent</p>
         </div>
         <Link to="/admin/winery/new">
-          <Button className="bg-[#722F37] hover:bg-[#5C252D]">
+          <Button className="bg-[#722F37] hover:bg-[#5C252D] shadow-md">
             <Plus className="w-4 h-4 mr-2" />
             Nova bodega
           </Button>
@@ -36,12 +36,12 @@ export default function WineryList() {
       </div>
 
       <div className="mb-6 relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <Input
           placeholder="Buscar bodega..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
+          className="pl-11 h-12 shadow-sm"
         />
       </div>
 
@@ -56,47 +56,57 @@ export default function WineryList() {
           {filtered.map((winery) => (
             <div
               key={winery.id}
-              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow"
+              className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg hover:border-slate-300 transition-all"
             >
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-slate-900">{winery.nombre}</h3>
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <h3 className="text-lg font-bold text-slate-900">{winery.nombre}</h3>
                     {winery.demo_publica && (
-                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded">
+                      <span className="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
                         Demo pública
                       </span>
                     )}
-                    <div className="flex items-center gap-1.5 text-sm text-slate-500">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200">
                       {winery.activa ? (
                         <>
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                          <span>Activa</span>
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <span className="text-xs font-medium text-emerald-700">Activa</span>
                         </>
                       ) : (
                         <>
-                          <Circle className="w-4 h-4 text-slate-400" />
-                          <span>Inactiva</span>
+                          <Circle className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-xs font-medium text-slate-500">Inactiva</span>
                         </>
                       )}
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 mb-3">{winery.descripcion_corta || winery.slug}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-slate-500">
-                    {winery.email && <span>✉ {winery.email}</span>}
-                    {winery.telefono && <span>📞 {winery.telefono}</span>}
+                  <p className="text-sm text-slate-600 mb-3 leading-relaxed">{winery.descripcion_corta || winery.slug}</p>
+                  <div className="flex flex-wrap gap-3 text-xs text-slate-500">
+                    {winery.email && (
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                        {winery.email}
+                      </span>
+                    )}
+                    {winery.telefono && (
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                        {winery.telefono}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex gap-2 ml-4">
+                <div className="flex gap-2">
                   <Link to={`/admin/winery/${winery.id}`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="w-4 h-4 mr-1" />
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Edit className="w-4 h-4" />
                       Editar
                     </Button>
                   </Link>
                   <Link to={`/admin/winery/${winery.id}/test`}>
-                    <Button variant="outline" size="sm">
-                      <Eye className="w-4 h-4 mr-1" />
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Eye className="w-4 h-4" />
                       Provar
                     </Button>
                   </Link>
