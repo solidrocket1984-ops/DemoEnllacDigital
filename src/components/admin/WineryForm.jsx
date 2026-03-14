@@ -264,7 +264,7 @@ export default function WineryForm({ wineryId }) {
             </div>
             <p className="text-sm font-medium text-slate-700 mb-2">Experiències de la bodega</p>
             <p className="text-sm text-slate-500 mb-6">Les experiències es gestionen en una secció independent per a millor organització</p>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={() => navigate("/admin/experiences")}>
               <Eye className="w-4 h-4" />
               Gestionar experiències
             </Button>
