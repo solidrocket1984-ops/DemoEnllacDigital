@@ -33,8 +33,8 @@ export default function AdminLayout({ children }) {
             <nav className="hidden lg:flex items-center gap-1">
               {navItems.slice(0, -1).map((item) => {
                 const Icon = item.icon;
-                const isActive = item.path === "/admin" 
-                  ? location.pathname === "/admin"
+                const isActive = item.path === "/admin/dashboard"
+                  ? location.pathname === "/admin/dashboard" || location.pathname === "/admin"
                   : location.pathname.startsWith(item.path);
                 return (
                   <Link
@@ -71,8 +71,8 @@ export default function AdminLayout({ children }) {
         <div className="grid grid-cols-4 gap-1 py-2 px-2">
           {[navItems[0], navItems[1], navItems[4], navItems[6]].map((item) => {
             const Icon = item.icon;
-            const isActive = item.path === "/admin" 
-              ? location.pathname === "/admin"
+            const isActive = item.path === "/admin/dashboard"
+              ? location.pathname === "/admin/dashboard" || location.pathname === "/admin"
               : location.pathname.startsWith(item.path);
             return (
               <Link
