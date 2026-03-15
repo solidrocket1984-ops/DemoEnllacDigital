@@ -6,7 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 // Add page imports here
-import PublicDemoPage from './pages/PublicDemoPage';
+import DemoCeller from './pages/DemoCeller';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminWineries from './pages/AdminWineries';
 import AdminWineryEdit from './pages/AdminWineryEdit';
@@ -18,7 +18,6 @@ import AdminSettings from './pages/AdminSettings';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -27,24 +26,21 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
       <Route path="/" element={<Navigate to="/demo" replace />} />
-      <Route path="/demo" element={<PublicDemoPage />} />
-      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/demo" element={<DemoCeller />} />
+      <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/wineries" element={<AdminWineries />} />
       <Route path="/admin/winery/:id" element={<AdminWineryEdit />} />
       <Route path="/admin/experiences" element={<AdminExperiences />} />
@@ -56,9 +52,7 @@ const AuthenticatedApp = () => {
   );
 };
 
-
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

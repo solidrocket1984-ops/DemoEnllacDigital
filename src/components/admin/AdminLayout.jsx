@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Wine, Eye, Settings, LayoutGrid, Sparkles, HelpCircle, BarChart3 } from "lucide-react";
 
 const navItems = [
-  { path: "/admin", label: "Dashboard", icon: LayoutGrid },
+  { path: "/admin/dashboard", label: "Dashboard", icon: LayoutGrid },
   { path: "/admin/wineries", label: "Bodegues", icon: Wine },
   { path: "/admin/experiences", label: "Experiències", icon: Sparkles },
   { path: "/admin/faqs", label: "FAQs", icon: HelpCircle },
