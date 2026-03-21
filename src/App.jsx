@@ -37,18 +37,35 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/demo" replace />} />
-      <Route path="/demo" element={<DemoCeller />} />
-      <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/wineries" element={<AdminWineries />} />
-      <Route path="/admin/winery/:id" element={<AdminWineryEdit />} />
-      <Route path="/admin/experiences" element={<AdminExperiences />} />
-      <Route path="/admin/faqs" element={<AdminFAQs />} />
-      <Route path="/admin/simulation" element={<AdminSimulation />} />
-      <Route path="/admin/settings" element={<AdminSettings />} />
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+  <Route path="/" element={<Navigate to="/demo" replace />} />
+
+  {/* Ruta principal bona */}
+  <Route path="/demo" element={<DemoCeller />} />
+
+  {/* Compatibilitat amb rutes antigues */}
+  <Route path="/DemoCeller" element={<Navigate to="/demo" replace />} />
+  <Route path="/PublicDemoPage" element={<Navigate to="/demo" replace />} />
+
+  <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+  <Route path="/admin/wineries" element={<AdminWineries />} />
+  <Route path="/admin/winery/:id" element={<AdminWineryEdit />} />
+  <Route path="/admin/experiences" element={<AdminExperiences />} />
+  <Route path="/admin/faqs" element={<AdminFAQs />} />
+  <Route path="/admin/simulation" element={<AdminSimulation />} />
+  <Route path="/admin/settings" element={<AdminSettings />} />
+
+  {/* Compatibilitat amb rutes admin antigues */}
+  <Route path="/AdminDashboard" element={<Navigate to="/admin/dashboard" replace />} />
+  <Route path="/AdminWineries" element={<Navigate to="/admin/wineries" replace />} />
+  <Route path="/AdminWineryEdit" element={<Navigate to="/admin/wineries" replace />} />
+  <Route path="/AdminExperiences" element={<Navigate to="/admin/experiences" replace />} />
+  <Route path="/AdminFAQs" element={<Navigate to="/admin/faqs" replace />} />
+  <Route path="/AdminSimulation" element={<Navigate to="/admin/simulation" replace />} />
+  <Route path="/AdminSettings" element={<Navigate to="/admin/settings" replace />} />
+
+  <Route path="*" element={<PageNotFound />} />
+</Routes>
   );
 };
 
