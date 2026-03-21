@@ -14,6 +14,7 @@ import AdminExperiences from './pages/AdminExperiences';
 import AdminFAQs from './pages/AdminFAQs';
 import AdminSimulation from './pages/AdminSimulation';
 import AdminSettings from './pages/AdminSettings';
+import AdminLeads from './pages/AdminLeads';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -54,6 +55,7 @@ const AuthenticatedApp = () => {
   <Route path="/admin/faqs" element={<AdminFAQs />} />
   <Route path="/admin/simulation" element={<AdminSimulation />} />
   <Route path="/admin/settings" element={<AdminSettings />} />
+  <Route path="/admin/leads" element={<AdminLeads />} />
 
   {/* Compatibilitat amb rutes admin antigues */}
   <Route path="/AdminDashboard" element={<Navigate to="/admin/dashboard" replace />} />
