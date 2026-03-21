@@ -85,7 +85,7 @@ export default function DemoCeller() {
               />
             </div>
             <div className="lg:col-span-4">
-              <LeadPanel t={t} leadData={leadData} />
+              <LeadPanel t={t} leadData={leadData} experiences={activeExperiences} />
             </div>
           </div>
         </div>
