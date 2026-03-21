@@ -2,18 +2,63 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Eye } from "lucide-react";
 
-export default function LeadPanel({ t, leadData }) {
+export default function LeadPanel({ t, leadData, experiences = [] }) {
+  const getExperienceName = () => {
+    const expId = leadData.recommended_experience_id;
+    if (!expId) return null;
+
+    const match = experiences.find(
+      (exp) => (exp.experience_id || exp.id) === expId
+    );
+
+    if (!match) return expId;
+
+    return match.nombre_ca || match.nombre_es || match.nombre_en || match.title_ca || match.title_es || match.title_en || expId;
+  };
+
+  const humanizeValue = (key, value) => {
+    if (value === null || value === undefined || value === "") return t.notAvailable;
+
+    const maps = {
+      detected_intent: {
+        pareja: "Parella",
+        grupo: "Grup",
+        regalo: "Regal",
+        practica: "Consulta pràctica",
+      },
+      objection_detected: {
+        none: "Cap",
+      },
+      lead_stage: {
+        new: "Nou",
+        qualified: "Qualificat",
+        contact_requested: "Contacte demanat",
+        handoff_ready: "Preparat per derivar",
+        closed_demo: "Tancat",
+      },
+      next_step: {
+        ask_contact: "Demanar contacte",
+        recommend_experience: "Recomanar experiència",
+        handoff: "Derivar",
+        retry: "Tornar-ho a provar",
+      },
+    };
+
+    if (maps[key] && maps[key][value]) return maps[key][value];
+    return value;
+  };
+
   const fields = [
-    { label: t.leadLang, value: leadData.language },
-    { label: t.leadIntent, value: leadData.detected_intent },
-    { label: t.leadPeople, value: leadData.people_count },
-    { label: t.leadExp, value: leadData.recommended_experience_id },
-    { label: t.leadObjection, value: leadData.objection_detected },
-    { label: t.leadStage, value: leadData.lead_stage },
-    { label: t.leadNextStep, value: leadData.next_step },
+    { key: "language", label: t.leadLang, value: leadData.language },
+    { key: "detected_intent", label: t.leadIntent, value: leadData.detected_intent },
+    { key: "people_count", label: t.leadPeople, value: leadData.people_count },
+    { key: "recommended_experience_id", label: t.leadExp, value: getExperienceName() },
+    { key: "objection_detected", label: t.leadObjection, value: leadData.objection_detected },
+    { key: "lead_stage", label: t.leadStage, value: leadData.lead_stage },
+    { key: "next_step", label: t.leadNextStep, value: leadData.next_step },
   ];
 
-  const hasData = Object.values(leadData).some((v) => v && v !== "");
+  const hasData = Object.values(leadData).some((v) => v !== null && v !== undefined && v !== "");
 
   return (
     <motion.div
@@ -35,10 +80,11 @@ export default function LeadPanel({ t, leadData }) {
               <div key={i} className="flex justify-between items-start gap-3">
                 <span className="text-xs text-stone-500 shrink-0">{f.label}</span>
                 <span className="text-xs font-medium text-[#2D1B14] text-right">
-                  {f.value || t.notAvailable}
+                  {humanizeValue(f.key, f.value)}
                 </span>
               </div>
             ))}
+
             {leadData.conversation_summary && (
               <div className="pt-2 border-t border-stone-100">
                 <span className="text-xs text-stone-500 block mb-1">{t.leadSummary}</span>
