@@ -70,7 +70,7 @@ export default function AdminLayout({ children }) {
 
       <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-stone-200 shadow-lg z-40">
         <div className="grid grid-cols-4 gap-1 py-2 px-2">
-          {[navItems[0], navItems[1], navItems[4], navItems[6]].map((item) => {
+          {[navItems[0], navItems[1], navItems[4], navItems[7]].map((item) => {
             const Icon = item.icon;
             const isActive = item.path === "/admin/dashboard"
               ? location.pathname === "/admin/dashboard" || location.pathname === "/admin"

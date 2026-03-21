@@ -1,14 +1,15 @@
 import React from "react";
 import AdminLayout from "../components/admin/AdminLayout";
 import { Link } from "react-router-dom";
-import { Wine, Sparkles, HelpCircle, Settings, BarChart3 } from "lucide-react";
+import { Wine, Sparkles, HelpCircle, Settings, BarChart3, Users } from "lucide-react";
 
 export default function AdminDashboard() {
   const sections = [
     { icon: Wine, label: "Bodegues", path: "/admin/wineries", color: "from-purple-500 to-purple-600" },
     { icon: Sparkles, label: "Experiències", path: "/admin/experiences", color: "from-amber-500 to-amber-600" },
     { icon: HelpCircle, label: "FAQs", path: "/admin/faqs", color: "from-blue-500 to-blue-600" },
-    { icon: BarChart3, label: "Simulació", path: "/admin/simulation", color: "from-emerald-500 to-emerald-600" },
+    { icon: Users, label: "Leads", path: "/admin/leads", color: "from-emerald-500 to-emerald-600" },
+    { icon: BarChart3, label: "Simulació", path: "/admin/simulation", color: "from-rose-500 to-rose-600" },
     { icon: Settings, label: "Ajustos", path: "/admin/settings", color: "from-slate-500 to-slate-600" },
   ];
 
