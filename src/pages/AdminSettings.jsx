@@ -59,7 +59,7 @@ export default function AdminSettings() {
               <Input
                 value={agentUrl}
                 onChange={(e) => setAgentUrl(e.target.value)}
-                placeholder="https://enllac-agent.onrender.com/"
+                placeholder="https://enllac-agent.onrender.com/chat"
                 className="h-11"
               />
               <p className="text-xs text-slate-500 mt-2">
