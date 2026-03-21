@@ -31,7 +31,7 @@ export default function ChatPanel({
       sendMessage(pendingExample);
       clearPendingExample();
     }
-  }, [pendingExample]);
+  }, [pendingExample, loading, clearPendingExample]);
 
   const sendMessage = async (text) => {
     const trimmed = (text || input).trim();
@@ -39,6 +39,7 @@ export default function ChatPanel({
 
     const userMsg = { role: "user", content: trimmed };
     const newMessages = [...messages, userMsg];
+
     setMessages(newMessages);
     if (!text) setInput("");
     setLoading(true);
@@ -46,7 +47,7 @@ export default function ChatPanel({
     try {
       const settings = await base44.entities.AppSettings.list();
       const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
-      const agentUrl = urlSetting?.value || "https://enllac-agent.onrender.com/chat";
+      const agentUrl = (urlSetting?.value || "https://enllac-agent.onrender.com/chat").trim();
 
       const payload = {
         language: lang,
@@ -70,11 +71,11 @@ export default function ChatPanel({
           description_ca: exp.descripcion_ca || exp.description_ca,
           description_es: exp.descripcion_es || exp.description_es,
           description_en: exp.descripcion_en || exp.description_en,
-          price: exp.precio || exp.price,
+          price: exp.precio ?? exp.price ?? null,
           currency: exp.moneda || exp.currency || "EUR",
-          duration: exp.duracion || exp.duration,
-          min_people: exp.minimo_personas || exp.min_people,
-          max_people: exp.maximo_personas || exp.max_people,
+          duration: exp.duracion || exp.duration || null,
+          min_people: exp.minimo_personas || exp.min_people || null,
+          max_people: exp.maximo_personas || exp.max_people || null,
         })),
         lead: { name: "", phone: "", email: "" },
         messages: newMessages
@@ -82,18 +83,38 @@ export default function ChatPanel({
           .map((m) => ({ role: m.role, content: m.content })),
       };
 
+      console.log("Agent URL:", agentUrl);
+      console.log("Payload sent to agent:", payload);
+
       const res = await fetch(agentUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
+      console.log("Response status:", res.status);
+
+      const rawText = await res.text();
+      console.log("Raw response:", rawText);
+
       if (!res.ok) {
-        throw new Error(`HTTP error ${res.status}`);
+        throw new Error(`HTTP error ${res.status}: ${rawText}`);
       }
 
-      const data = await res.json();
-      const assistantMsg = { role: "assistant", content: data.reply_text || "..." };
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch (parseError) {
+        console.error("Error parsing JSON response:", parseError);
+        throw new Error("La resposta de l'agent no és un JSON vàlid");
+      }
+
+      console.log("Agent response data:", data);
+
+      const assistantMsg = {
+        role: "assistant",
+        content: data.reply_text || "..."
+      };
 
       setMessages((prev) => [...prev, assistantMsg]);
 
@@ -102,11 +123,20 @@ export default function ChatPanel({
       }
     } catch (error) {
       console.error("Error calling agent:", error);
+
+      let errorMessage =
+        t.connectionError || "Hi ha hagut un error de connexió. Torna-ho a provar.";
+
+      if (String(error?.message || "").includes("Failed to fetch")) {
+        errorMessage =
+          t.connectionError || "No s'ha pogut contactar amb l'assistent. Revisa l'endpoint o torna-ho a provar.";
+      }
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: t.connectionError || "Hi ha hagut un error de connexió. Torna-ho a provar."
+          content: errorMessage,
         },
       ]);
     } finally {
@@ -138,10 +168,14 @@ export default function ChatPanel({
         </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[320px] max-h-[460px]">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[320px] max-h-[460px]"
+      >
         {messages.map((msg, i) => (
           <ChatBubble key={i} message={msg} />
         ))}
+
         {loading && (
           <div className="flex items-center gap-2 text-stone-400 text-xs pl-9">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
