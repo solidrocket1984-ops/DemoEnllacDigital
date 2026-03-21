@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { translations, scenarioMap } from "../components/demo-celler/translations";
 import DemoHeader from "../components/demo-celler/DemoHeader";
 import DemoHero from "../components/demo-celler/DemoHero";
+import FlowSteps from "../components/demo-celler/FlowSteps";
 import ExamplesPanel from "../components/demo-celler/ExamplesPanel";
 import ChatPanel from "../components/demo-celler/ChatPanel";
 import LeadPanel from "../components/demo-celler/LeadPanel";
