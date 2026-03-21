@@ -127,6 +127,7 @@ export default function DemoCeller() {
       <DemoHeader lang={lang} setLang={handleLangChange} t={t} winery={wineryDisplay} />
 
       <DemoHero t={t} onDemoClick={scrollToDemo} winery={wineryDisplay} />
+      <FlowSteps t={t} />
 
       <section ref={demoRef} className="py-12 sm:py-16 bg-white scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4">
