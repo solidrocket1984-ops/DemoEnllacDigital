@@ -46,7 +46,7 @@ export default function ChatPanel({
     try {
       const settings = await base44.entities.AppSettings.list();
       const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
-      const agentUrl = urlSetting?.value || "https://enllac-agent.onrender.com/";
+      const agentUrl = urlSetting?.value || "https://enllac-agent.onrender.com/chat";
 
       const payload = {
         language: lang,
