@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Wine, Eye, Settings, LayoutGrid, Sparkles, HelpCircle, BarChart3 } from "lucide-react";
+import { Wine, Eye, Settings, LayoutGrid, Sparkles, HelpCircle, BarChart3, Users } from "lucide-react";
 
 const navItems = [
   { path: "/admin/dashboard", label: "Dashboard", icon: LayoutGrid },

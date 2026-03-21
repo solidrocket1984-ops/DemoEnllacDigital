@@ -128,7 +128,7 @@ console.log("Agent URL final:", agentUrl);
       setMessages((prev) => [...prev, assistantMsg]);
 
       if (onAgentResponse) {
-        onAgentResponse(data);
+        onAgentResponse(data, [...newMessages, assistantMsg]);
       }
     } catch (error) {
       console.error("Error calling agent:", error);
