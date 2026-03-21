@@ -16,6 +16,11 @@ export default function DemoCeller() {
   const [messages, setMessages] = useState([]);
   const [leadData, setLeadData] = useState({});
   const [pendingExample, setPendingExample] = useState(null);
+
+  // temporal fins que connectem la bodega activa real
+  const [activeWinery] = useState({ name: "Celler Demo" });
+  const [activeExperiences] = useState([]);
+
   const demoRef = useRef(null);
 
   const t = translations[lang];
@@ -31,6 +36,7 @@ export default function DemoCeller() {
     setMessages([{ role: "assistant", content: translations[newLang].chatWelcome }]);
     setLeadData({});
     setScenario("libre");
+    setPendingExample(null);
   };
 
   const scrollToDemo = () => {
@@ -48,15 +54,15 @@ export default function DemoCeller() {
   const handleAgentResponse = (data) => {
     setLeadData((prev) => ({
       ...prev,
-      language: data.language || lang,
-      detected_intent: data.detected_intent || prev.detected_intent,
-      people_count: data.people_count || prev.people_count,
-      recommended_experience_id: data.recommended_experience_id || prev.recommended_experience_id,
-      objection_detected: data.objection_detected || prev.objection_detected,
-      lead_stage: data.lead_stage || prev.lead_stage,
-      next_step: data.next_step || prev.next_step,
-      ask_for_contact: data.ask_for_contact || prev.ask_for_contact,
-      conversation_summary: data.conversation_summary || prev.conversation_summary,
+      language: data.language ?? lang,
+      detected_intent: data.detected_intent ?? prev.detected_intent,
+      people_count: data.people_count ?? prev.people_count,
+      recommended_experience_id: data.recommended_experience_id ?? prev.recommended_experience_id,
+      objection_detected: data.objection_detected ?? prev.objection_detected,
+      lead_stage: data.lead_stage ?? prev.lead_stage,
+      next_step: data.next_step ?? prev.next_step,
+      ask_for_contact: data.ask_for_contact ?? prev.ask_for_contact,
+      conversation_summary: data.conversation_summary ?? prev.conversation_summary,
     }));
   };
 
@@ -72,6 +78,7 @@ export default function DemoCeller() {
             <div className="lg:col-span-3">
               <ExamplesPanel t={t} onExampleClick={handleExampleClick} />
             </div>
+
             <div className="lg:col-span-5">
               <ChatPanel
                 t={t}
@@ -82,10 +89,17 @@ export default function DemoCeller() {
                 onAgentResponse={handleAgentResponse}
                 pendingExample={pendingExample}
                 clearPendingExample={() => setPendingExample(null)}
+                winery={activeWinery}
+                experiences={activeExperiences}
               />
             </div>
+
             <div className="lg:col-span-4">
-              <LeadPanel t={t} leadData={leadData} experiences={activeExperiences} />
+              <LeadPanel
+                t={t}
+                leadData={leadData}
+                experiences={activeExperiences}
+              />
             </div>
           </div>
         </div>
