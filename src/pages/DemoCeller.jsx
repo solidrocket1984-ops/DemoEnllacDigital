@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { translations, scenarioMap } from "../components/demo-celler/translations";
 import DemoHeader from "../components/demo-celler/DemoHeader";
-import HeroSection from "../components/demo-celler/HeroSection";
-import FeaturesSection from "../components/demo-celler/FeaturesSection";
+import DemoHero from "../components/demo-celler/DemoHero";
 import ExamplesPanel from "../components/demo-celler/ExamplesPanel";
 import ChatPanel from "../components/demo-celler/ChatPanel";
 import LeadPanel from "../components/demo-celler/LeadPanel";
-import ContactForm from "../components/demo-celler/ContactForm";
+import LeadSavedCard from "../components/demo-celler/LeadSavedCard";
 import DemoFooter from "../components/demo-celler/DemoFooter";
 import MobileBar from "../components/demo-celler/MobileBar";
+import { upsertLead, simulateExport } from "../lib/leadService";
+import { getDemoSessionId, resetDemoSessionId } from "../lib/useDemoSession";
 
 export default function DemoCeller() {
   const [lang, setLang] = useState("ca");
@@ -16,27 +19,53 @@ export default function DemoCeller() {
   const [messages, setMessages] = useState([]);
   const [leadData, setLeadData] = useState({});
   const [pendingExample, setPendingExample] = useState(null);
-
-  // temporal fins que connectem la bodega activa real
-  const [activeWinery] = useState({ name: "Celler Demo" });
-  const [activeExperiences] = useState([]);
-
+  const [savedLead, setSavedLead] = useState(null);
+  const [currentLeadId, setCurrentLeadId] = useState(null);
   const demoRef = useRef(null);
 
   const t = translations[lang];
 
+  // Load demo winery (the one marked as demo_publica)
+  const { data: wineries = [] } = useQuery({
+    queryKey: ["wineries-public"],
+    queryFn: () => base44.entities.Winery.list(),
+  });
+
+  const activeWinery = wineries.find((w) => w.demo_publica && w.activa) || wineries.find((w) => w.activa) || null;
+
+  const { data: experiences = [] } = useQuery({
+    queryKey: ["experiences-public", activeWinery?.id],
+    queryFn: () => activeWinery ? base44.entities.Experience.filter({ winery_id: activeWinery.id, activa: true }) : Promise.resolve([]),
+    enabled: !!activeWinery,
+  });
+
+  const { data: settings = [] } = useQuery({
+    queryKey: ["settings"],
+    queryFn: () => base44.entities.AppSettings.list(),
+  });
+
   useEffect(() => {
     if (messages.length === 0) {
-      setMessages([{ role: "assistant", content: translations[lang].chatWelcome }]);
+      const welcomeMsg = activeWinery
+        ? translations[lang].chatWelcome.replace("Celler Demo", activeWinery.nombre || "Celler Demo")
+        : translations[lang].chatWelcome;
+      setMessages([{ role: "assistant", content: welcomeMsg }]);
     }
-  }, []);
+  }, [activeWinery]);
 
   const handleLangChange = (newLang) => {
     setLang(newLang);
-    setMessages([{ role: "assistant", content: translations[newLang].chatWelcome }]);
+    const welcomeMsg = activeWinery
+      ? translations[newLang].chatWelcome.replace("Celler Demo", activeWinery.nombre || "Celler Demo")
+      : translations[newLang].chatWelcome;
+    setMessages([{ role: "assistant", content: welcomeMsg }]);
     setLeadData({});
     setScenario("libre");
     setPendingExample(null);
+    // New session on lang change
+    resetDemoSessionId();
+    setSavedLead(null);
+    setCurrentLeadId(null);
   };
 
   const scrollToDemo = () => {
@@ -51,34 +80,77 @@ export default function DemoCeller() {
     scrollToDemo();
   };
 
-  const handleAgentResponse = (data) => {
-    setLeadData((prev) => ({
-      ...prev,
+  const handleAgentResponse = async (data, currentMessages) => {
+    const updatedLead = {
       language: data.language ?? lang,
-      detected_intent: data.detected_intent ?? prev.detected_intent,
-      people_count: data.people_count ?? prev.people_count,
-      recommended_experience_id: data.recommended_experience_id ?? prev.recommended_experience_id,
-      objection_detected: data.objection_detected ?? prev.objection_detected,
-      lead_stage: data.lead_stage ?? prev.lead_stage,
-      next_step: data.next_step ?? prev.next_step,
-      ask_for_contact: data.ask_for_contact ?? prev.ask_for_contact,
-      conversation_summary: data.conversation_summary ?? prev.conversation_summary,
-    }));
+      detected_intent: data.detected_intent ?? leadData.detected_intent,
+      people_count: data.people_count ?? leadData.people_count,
+      recommended_experience_id: data.recommended_experience_id ?? leadData.recommended_experience_id,
+      objection_detected: data.objection_detected ?? leadData.objection_detected,
+      lead_stage: data.lead_stage ?? leadData.lead_stage,
+      next_step: data.next_step ?? leadData.next_step,
+      ask_for_contact: data.ask_for_contact ?? leadData.ask_for_contact,
+      conversation_summary: data.conversation_summary ?? leadData.conversation_summary,
+    };
+    setLeadData(updatedLead);
+
+    // Auto-save lead
+    const saved = await upsertLead({
+      agentData: data,
+      messages: currentMessages,
+      winery: activeWinery,
+      experiences,
+      scenario,
+      lang,
+      existingLeadId: currentLeadId,
+    });
+
+    if (saved) {
+      setSavedLead(saved);
+      setCurrentLeadId(saved.id);
+    }
   };
+
+  const handleExportLead = async () => {
+    if (!savedLead) return;
+    const result = await simulateExport(savedLead, settings);
+    if (result.success) {
+      setSavedLead((prev) => ({ ...prev, exportStatus: "exported", destinationType: "crm" }));
+    }
+  };
+
+  const wineryDisplay = activeWinery || { nombre: "Celler Demo", slug: "demo" };
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-16 sm:pb-0">
-      <DemoHeader lang={lang} setLang={handleLangChange} t={t} />
-      <HeroSection t={t} onDemoClick={scrollToDemo} />
-      <FeaturesSection t={t} />
+      <DemoHeader lang={lang} setLang={handleLangChange} t={t} winery={wineryDisplay} />
 
-      <section ref={demoRef} className="py-16 sm:py-20 bg-white scroll-mt-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-3">
+      <DemoHero t={t} onDemoClick={scrollToDemo} winery={wineryDisplay} />
+
+      <section ref={demoRef} className="py-12 sm:py-16 bg-white scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Section label */}
+          <div className="mb-8 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#722F37]/8 text-[#722F37] text-xs font-medium mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#722F37] animate-pulse" />
+              Demo en viu · Conversa real
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-[#2D1B14]">
+              Prova l'assistent de {wineryDisplay.nombre}
+            </h2>
+            <p className="text-sm text-stone-500 mt-1">
+              Escriu o escull un exemple. Veuràs la conversa, la detecció del lead i el guardado automàtic.
+            </p>
+          </div>
+
+          {/* Main demo grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            {/* Examples */}
+            <div className="lg:col-span-2">
               <ExamplesPanel t={t} onExampleClick={handleExampleClick} />
             </div>
 
+            {/* Chat */}
             <div className="lg:col-span-5">
               <ChatPanel
                 t={t}
@@ -89,24 +161,24 @@ export default function DemoCeller() {
                 onAgentResponse={handleAgentResponse}
                 pendingExample={pendingExample}
                 clearPendingExample={() => setPendingExample(null)}
-                winery={activeWinery}
-                experiences={activeExperiences}
+                winery={wineryDisplay}
+                experiences={experiences}
               />
             </div>
 
-            <div className="lg:col-span-4">
-              <LeadPanel
-                t={t}
-                leadData={leadData}
-                experiences={activeExperiences}
+            {/* Right panel: Lead detected + Lead saved */}
+            <div className="lg:col-span-5 space-y-4">
+              <LeadPanel t={t} leadData={leadData} experiences={experiences} />
+              <LeadSavedCard
+                savedLead={savedLead}
+                onExport={savedLead?.exportStatus !== "exported" ? handleExportLead : null}
               />
             </div>
           </div>
         </div>
       </section>
 
-      <ContactForm t={t} />
-      <DemoFooter t={t} />
+      <DemoFooter t={t} lang={lang} />
       <MobileBar t={t} onDemoClick={scrollToDemo} />
     </div>
   );
