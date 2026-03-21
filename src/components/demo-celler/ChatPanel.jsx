@@ -46,9 +46,18 @@ export default function ChatPanel({
 
     try {
       const settings = await base44.entities.AppSettings.list();
-      const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
-      const agentUrl = (urlSetting?.value || "https://enllac-agent.onrender.com/chat").trim();
+const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
 
+let agentUrl = (urlSetting?.value || "https://enllac-agent.onrender.com/chat").trim();
+
+// Si no termina en /chat, añadirlo automáticamente
+if (!agentUrl.endsWith("/chat")) {
+  agentUrl = agentUrl.replace(/\/+$/, "") + "/chat";
+}
+
+console.log("AppSettings:", settings);
+console.log("URL setting found:", urlSetting);
+console.log("Agent URL final:", agentUrl);
       const payload = {
         language: lang,
         scenario: scenario || "libre",
