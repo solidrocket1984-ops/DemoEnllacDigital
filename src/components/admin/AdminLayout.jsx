@@ -7,6 +7,7 @@ const navItems = [
   { path: "/admin/wineries", label: "Bodegues", icon: Wine },
   { path: "/admin/experiences", label: "Experiències", icon: Sparkles },
   { path: "/admin/faqs", label: "FAQs", icon: HelpCircle },
+  { path: "/admin/leads", label: "Leads", icon: Users },
   { path: "/admin/simulation", label: "Simulació", icon: BarChart3 },
   { path: "/admin/settings", label: "Ajustos", icon: Settings },
   { path: "/demo", label: "Demo pública", icon: Eye },
