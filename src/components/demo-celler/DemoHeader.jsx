@@ -5,7 +5,9 @@ import { Mail, Settings } from "lucide-react";
 const langLabels = { ca: "Català", es: "Castellano", en: "English" };
 const adminLabels = { ca: "Gestió", es: "Gestión", en: "Admin" };
 
-export default function DemoHeader({ lang, setLang, t }) {
+export default function DemoHeader({ lang, setLang, t, winery }) {
+  const wineryName = winery?.nombre || winery?.name || null;
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -13,7 +15,12 @@ export default function DemoHeader({ lang, setLang, t }) {
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#722F37] to-[#9B4550] flex items-center justify-center shadow-sm">
             <span className="text-white font-bold text-sm">ED</span>
           </div>
-          <span className="font-semibold text-[#2D1B14] text-sm hidden sm:inline">Enllaç Digital</span>
+          <div className="hidden sm:block">
+            <span className="font-semibold text-[#2D1B14] text-sm">Enllaç Digital</span>
+            {wineryName && (
+              <span className="text-xs text-stone-400 ml-2">· Demo: {wineryName}</span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
