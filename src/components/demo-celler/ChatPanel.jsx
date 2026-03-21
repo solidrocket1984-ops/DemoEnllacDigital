@@ -3,7 +3,18 @@ import { base44 } from "@/api/base44Client";
 import { Send, Loader2 } from "lucide-react";
 import ChatBubble from "./ChatBubble.jsx";
 
-export default function ChatPanel({ t, lang, scenario, messages, setMessages, onAgentResponse, pendingExample, clearPendingExample, winery, experiences }) {
+export default function ChatPanel({
+  t,
+  lang,
+  scenario,
+  messages,
+  setMessages,
+  onAgentResponse,
+  pendingExample,
+  clearPendingExample,
+  winery,
+  experiences
+}) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
@@ -15,7 +26,6 @@ export default function ChatPanel({ t, lang, scenario, messages, setMessages, on
     }
   }, [messages, loading]);
 
-  // Handle pending example from parent
   useEffect(() => {
     if (pendingExample && !loading) {
       sendMessage(pendingExample);
@@ -42,29 +52,29 @@ export default function ChatPanel({ t, lang, scenario, messages, setMessages, on
         language: lang,
         scenario: scenario || "libre",
         winery: {
-          name: winery?.nombre || "Celler Demo",
+          name: winery?.nombre || winery?.name || "Celler Demo",
           slug: winery?.slug || "demo",
-          brand_tone: winery?.tono_marca || "",
-          brief_history: winery?.historia_breve || "",
-          short_description: winery?.descripcion_corta || "",
-          value_proposition: winery?.propuesta_valor || "",
-          faqs: winery?.faqs_texto || "",
+          brand_tone: winery?.tono_marca || winery?.brand_tone || "",
+          brief_history: winery?.historia_breve || winery?.brief_history || "",
+          short_description: winery?.descripcion_corta || winery?.short_description || "",
+          value_proposition: winery?.propuesta_valor || winery?.value_proposition || "",
+          faqs: winery?.faqs_texto || winery?.faqs || "",
           recommendation_rules: winery?.reglas_recomendacion || "",
           objection_rules: winery?.reglas_objeciones || "",
         },
         experiences: (experiences || []).map((exp) => ({
-          id: exp.experience_id,
-          title_ca: exp.nombre_ca,
-          title_es: exp.nombre_es,
-          title_en: exp.nombre_en,
-          description_ca: exp.descripcion_ca,
-          description_es: exp.descripcion_es,
-          description_en: exp.descripcion_en,
-          price: exp.precio,
-          currency: exp.moneda || "EUR",
-          duration: exp.duracion,
-          min_people: exp.minimo_personas,
-          max_people: exp.maximo_personas,
+          id: exp.experience_id || exp.id,
+          title_ca: exp.nombre_ca || exp.title_ca,
+          title_es: exp.nombre_es || exp.title_es,
+          title_en: exp.nombre_en || exp.title_en,
+          description_ca: exp.descripcion_ca || exp.description_ca,
+          description_es: exp.descripcion_es || exp.description_es,
+          description_en: exp.descripcion_en || exp.description_en,
+          price: exp.precio || exp.price,
+          currency: exp.moneda || exp.currency || "EUR",
+          duration: exp.duracion || exp.duration,
+          min_people: exp.minimo_personas || exp.min_people,
+          max_people: exp.maximo_personas || exp.max_people,
         })),
         lead: { name: "", phone: "", email: "" },
         messages: newMessages
@@ -84,13 +94,20 @@ export default function ChatPanel({ t, lang, scenario, messages, setMessages, on
 
       const data = await res.json();
       const assistantMsg = { role: "assistant", content: data.reply_text || "..." };
+
       setMessages((prev) => [...prev, assistantMsg]);
-      if (onAgentResponse) onAgentResponse(data);
+
+      if (onAgentResponse) {
+        onAgentResponse(data);
+      }
     } catch (error) {
       console.error("Error calling agent:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Ho sentim, hi ha hagut un error de connexió. Torna-ho a provar." },
+        {
+          role: "assistant",
+          content: t.connectionError || "Hi ha hagut un error de connexió. Torna-ho a provar."
+        },
       ]);
     } finally {
       setLoading(false);
@@ -106,21 +123,21 @@ export default function ChatPanel({ t, lang, scenario, messages, setMessages, on
 
   return (
     <div className="flex flex-col h-full bg-white rounded-2xl border border-stone-200 shadow-lg overflow-hidden">
-      {/* Chat header */}
       <div className="px-5 py-3.5 border-b border-stone-100 bg-gradient-to-r from-[#FAF7F2] to-white">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#722F37] to-[#9B4550] flex items-center justify-center">
             <span className="text-white text-[10px] font-bold">ED</span>
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#2D1B14]">Celler Demo</p>
+            <p className="text-sm font-semibold text-[#2D1B14]">
+              {winery?.nombre || winery?.name || "Celler Demo"}
+            </p>
             <p className="text-[11px] text-stone-400">Assistent · Enllaç Digital</p>
           </div>
           <span className="ml-auto w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
       </div>
 
-      {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[320px] max-h-[460px]">
         {messages.map((msg, i) => (
           <ChatBubble key={i} message={msg} />
@@ -128,12 +145,11 @@ export default function ChatPanel({ t, lang, scenario, messages, setMessages, on
         {loading && (
           <div className="flex items-center gap-2 text-stone-400 text-xs pl-9">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Escrivint...</span>
+            <span>{t.typing || "Escrivint..."}</span>
           </div>
         )}
       </div>
 
-      {/* Input */}
       <div className="p-3 border-t border-stone-100 bg-[#FDFCFA]">
         <div className="flex items-center gap-2">
           <input
