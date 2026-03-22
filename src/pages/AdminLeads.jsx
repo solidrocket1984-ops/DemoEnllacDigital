@@ -75,16 +75,20 @@ export default function AdminLeads() {
     },
   });
 
+  const wineryOptions = [...new Set(leads.map((l) => l.wineryName).filter(Boolean))];
+
   const filtered = leads.filter((lead) => {
     const matchSearch =
       !search ||
       lead.wineryName?.toLowerCase().includes(search.toLowerCase()) ||
       lead.leadName?.toLowerCase().includes(search.toLowerCase()) ||
       lead.leadEmail?.toLowerCase().includes(search.toLowerCase()) ||
+      lead.leadPhone?.toLowerCase().includes(search.toLowerCase()) ||
       lead.conversationSummary?.toLowerCase().includes(search.toLowerCase());
     const matchStage = filterStage === "all" || lead.leadStage === filterStage;
     const matchLang = filterLang === "all" || lead.language === filterLang;
-    return matchSearch && matchStage && matchLang;
+    const matchWinery = filterWinery === "all" || lead.wineryName === filterWinery;
+    return matchSearch && matchStage && matchLang && matchWinery;
   });
 
   return (
