@@ -198,6 +198,7 @@ export default function DemoCeller() {
         </div>
       </section>
 
+      <LeadsDBModal open={showLeadsDB} onClose={() => setShowLeadsDB(false)} />
       <DemoFooter t={t} lang={lang} />
       <MobileBar t={t} onDemoClick={scrollToDemo} />
     </div>
