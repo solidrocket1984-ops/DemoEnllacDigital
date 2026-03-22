@@ -2,13 +2,17 @@ import { base44 } from "@/api/base44Client";
 import { getDemoSessionId } from "./useDemoSession";
 
 function shouldSaveLead(agentData) {
+  const merged = { ...agentData, ...(agentData.fields_to_update || {}) };
   return !!(
-    agentData.detected_intent ||
-    agentData.people_count ||
-    agentData.recommended_experience_id ||
-    agentData.lead_stage ||
-    agentData.conversation_summary ||
-    agentData.ask_for_contact
+    merged.detected_intent ||
+    merged.people_count ||
+    merged.recommended_experience_id ||
+    merged.lead_stage ||
+    merged.conversation_summary ||
+    merged.ask_for_contact ||
+    merged.lead_name || merged.name || merged.nombre || merged.nom ||
+    merged.lead_email || merged.email || merged.correu ||
+    merged.lead_phone || merged.phone || merged.telefono || merged.telefon
   );
 }
 
@@ -92,7 +96,7 @@ export async function upsertLead({ agentData, messages, winery, experiences, sce
 
   const leadPayload = {
     sessionId,
-    source: "demo",
+    source: "public_demo",
     wineryId: winery?.id || winery?.slug || "demo",
     wineryName: winery?.nombre || winery?.name || "Celler Demo",
     language: agentData.language || lang,
