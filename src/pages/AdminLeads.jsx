@@ -41,6 +41,7 @@ export default function AdminLeads() {
   const [search, setSearch] = useState("");
   const [filterStage, setFilterStage] = useState("all");
   const [filterLang, setFilterLang] = useState("all");
+  const [filterWinery, setFilterWinery] = useState("all");
   const [selectedLead, setSelectedLead] = useState(null);
   const [showJson, setShowJson] = useState(false);
 

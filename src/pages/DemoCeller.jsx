@@ -82,16 +82,24 @@ export default function DemoCeller() {
   };
 
   const handleAgentResponse = async (data, currentMessages) => {
+    // Merge fields_to_update if present
+    const merged = { ...data, ...(data.fields_to_update || {}) };
+
     const updatedLead = {
-      language: data.language ?? lang,
-      detected_intent: data.detected_intent ?? leadData.detected_intent,
-      people_count: data.people_count ?? leadData.people_count,
-      recommended_experience_id: data.recommended_experience_id ?? leadData.recommended_experience_id,
-      objection_detected: data.objection_detected ?? leadData.objection_detected,
-      lead_stage: data.lead_stage ?? leadData.lead_stage,
-      next_step: data.next_step ?? leadData.next_step,
-      ask_for_contact: data.ask_for_contact ?? leadData.ask_for_contact,
-      conversation_summary: data.conversation_summary ?? leadData.conversation_summary,
+      language: merged.language ?? lang,
+      detected_intent: merged.detected_intent ?? leadData.detected_intent,
+      people_count: merged.people_count ?? leadData.people_count,
+      recommended_experience_id: merged.recommended_experience_id ?? leadData.recommended_experience_id,
+      objection_detected: merged.objection_detected ?? leadData.objection_detected,
+      lead_stage: merged.lead_stage ?? leadData.lead_stage,
+      next_step: merged.next_step ?? leadData.next_step,
+      ask_for_contact: merged.ask_for_contact ?? leadData.ask_for_contact,
+      conversation_summary: merged.conversation_summary ?? leadData.conversation_summary,
+      // Contact fields — accept many variants
+      lead_name: merged.lead_name || merged.name || merged.nombre || merged.nom || leadData.lead_name,
+      lead_email: merged.lead_email || merged.email || merged.correu || leadData.lead_email,
+      lead_phone: merged.lead_phone || merged.phone || merged.telefono || merged.telefon || leadData.lead_phone,
+      desired_date: merged.desired_date || merged.fecha || merged.data_visita || leadData.desired_date,
     };
     setLeadData(updatedLead);
 
