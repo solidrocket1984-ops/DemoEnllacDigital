@@ -154,6 +154,13 @@ export default function DemoCeller() {
             <p className="text-sm text-stone-500 mt-1">
               Escriu o escull un exemple. Veuràs la conversa, la detecció del lead i el guardado automàtic.
             </p>
+            <button
+              onClick={() => setShowLeadsDB(true)}
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium bg-white border border-stone-200 text-stone-600 hover:border-emerald-300 hover:text-emerald-700 hover:bg-emerald-50 transition-all shadow-sm"
+            >
+              <Database className="w-3.5 h-3.5" />
+              Veure BBDD de leads captats
+            </button>
           </div>
 
           {/* Main demo grid */}
