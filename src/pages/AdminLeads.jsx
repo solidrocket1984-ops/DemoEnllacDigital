@@ -191,28 +191,34 @@ export default function AdminLeads() {
                     </div>
 
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                      {lead.detectedIntent && (
-                        <span className="flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" />
-                          {intentLabels[lead.detectedIntent] || lead.detectedIntent}
-                        </span>
-                      )}
-                      {lead.peopleCount && (
-                        <span className="flex items-center gap-1">
+                      {lead.leadName && (
+                        <span className="flex items-center gap-1 font-medium text-slate-700">
                           <Users className="w-3 h-3" />
-                          {lead.peopleCount} persones
-                        </span>
-                      )}
-                      {lead.recommendedExperienceName && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {lead.recommendedExperienceName}
+                          {lead.leadName}
                         </span>
                       )}
                       {lead.leadEmail && (
                         <span className="flex items-center gap-1">
                           <Mail className="w-3 h-3" />
                           {lead.leadEmail}
+                        </span>
+                      )}
+                      {lead.leadPhone && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          {lead.leadPhone}
+                        </span>
+                      )}
+                      {lead.detectedIntent && (
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          {intentLabels[lead.detectedIntent] || lead.detectedIntent}
+                        </span>
+                      )}
+                      {lead.recommendedExperienceName && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {lead.recommendedExperienceName}
                         </span>
                       )}
                       {lead.language && (
