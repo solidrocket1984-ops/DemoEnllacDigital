@@ -166,7 +166,7 @@ export default function AdminLeads() {
             <p className="text-xs mt-1">Inicia una conversa a la demo pública</p>
           </div>
         ) : (
-          {/* Table header */}
+          <>
           <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wide border-b border-slate-100">
             <div className="col-span-2">Nom</div>
             <div className="col-span-2">Email</div>
