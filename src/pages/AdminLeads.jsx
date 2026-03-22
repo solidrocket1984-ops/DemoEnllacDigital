@@ -268,6 +268,7 @@ export default function AdminLeads() {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
 
