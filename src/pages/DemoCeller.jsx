@@ -13,6 +13,8 @@ import DemoFooter from "../components/demo-celler/DemoFooter";
 import MobileBar from "../components/demo-celler/MobileBar";
 import { upsertLead, simulateExport } from "../lib/leadService";
 import { getDemoSessionId, resetDemoSessionId } from "../lib/useDemoSession";
+import LeadsDBModal from "../components/demo-celler/LeadsDBModal";
+import { Database } from "lucide-react";
 
 export default function DemoCeller() {
   const [lang, setLang] = useState("ca");
@@ -22,6 +24,7 @@ export default function DemoCeller() {
   const [pendingExample, setPendingExample] = useState(null);
   const [savedLead, setSavedLead] = useState(null);
   const [currentLeadId, setCurrentLeadId] = useState(null);
+  const [showLeadsDB, setShowLeadsDB] = useState(false);
   const demoRef = useRef(null);
 
   const t = translations[lang];
