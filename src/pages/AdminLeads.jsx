@@ -141,6 +141,19 @@ export default function AdminLeads() {
               <SelectItem value="en">English</SelectItem>
             </SelectContent>
           </Select>
+          {wineryOptions.length > 1 && (
+            <Select value={filterWinery} onValueChange={setFilterWinery}>
+              <SelectTrigger className="w-full sm:w-44 h-10">
+                <SelectValue placeholder="Celler" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tots els cellers</SelectItem>
+                {wineryOptions.map((w) => (
+                  <SelectItem key={w} value={w}>{w}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         {/* List */}
