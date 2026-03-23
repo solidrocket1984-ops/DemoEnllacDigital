@@ -62,7 +62,7 @@ console.log("Agent URL final:", agentUrl);
         language: lang,
         scenario: scenario || "libre",
         winery: {
-          name: winery?.nombre || winery?.name || "Celler Demo",
+          name: winery?.nombre || winery?.name || "Oriol Rossell",
           slug: winery?.slug || "demo",
           brand_tone: winery?.tono_marca || winery?.brand_tone || "",
           brief_history: winery?.historia_breve || winery?.brief_history || "",
@@ -169,7 +169,7 @@ console.log("Agent URL final:", agentUrl);
           </div>
           <div>
             <p className="text-sm font-semibold text-[#2D1B14]">
-              {winery?.nombre || winery?.name || "Celler Demo"}
+              {winery?.nombre || winery?.name || "Oriol Rossell"}
             </p>
             <p className="text-[11px] text-stone-400">Assistent · Enllaç Digital</p>
           </div>
