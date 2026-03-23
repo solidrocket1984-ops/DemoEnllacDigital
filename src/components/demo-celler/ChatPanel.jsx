@@ -17,8 +17,38 @@ export default function ChatPanel({
 }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agentUrl, setAgentUrl] = useState("https://enllac-agent.onrender.com/chat");
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAgentUrl() {
+      try {
+        const settings = await base44.entities.AppSettings.list();
+        const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
+
+        let url = (urlSetting?.value || "https://enllac-agent.onrender.com/chat").trim();
+
+        if (!url.endsWith("/chat")) {
+          url = url.replace(/\/+$/, "") + "/chat";
+        }
+
+        if (!cancelled) {
+          setAgentUrl(url);
+        }
+      } catch (error) {
+        console.error("Error cargando agent URL:", error);
+      }
+    }
+
+    loadAgentUrl();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -33,6 +63,25 @@ export default function ChatPanel({
     }
   }, [pendingExample, loading, clearPendingExample]);
 
+  const truncateText = (value, maxLength) => {
+    const text = String(value || "").trim();
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + "...";
+  };
+
+  const getLocalizedValue = (exp, type) => {
+    if (type === "title") {
+      if (lang === "ca") return exp.nombre_ca || exp.title_ca || exp.nombre_es || exp.title_es || exp.nombre_en || exp.title_en || "";
+      if (lang === "es") return exp.nombre_es || exp.title_es || exp.nombre_ca || exp.title_ca || exp.nombre_en || exp.title_en || "";
+      return exp.nombre_en || exp.title_en || exp.nombre_es || exp.title_es || exp.nombre_ca || exp.title_ca || "";
+    }
+
+    if (lang === "ca") return exp.descripcion_ca || exp.description_ca || exp.descripcion_es || exp.description_es || exp.descripcion_en || exp.description_en || "";
+    if (lang === "es") return exp.descripcion_es || exp.description_es || exp.descripcion_ca || exp.description_ca || exp.descripcion_en || exp.description_en || "";
+    return exp.descripcion_en || exp.description_en || exp.descripcion_es || exp.description_es || exp.descripcion_ca || exp.description_ca || "";
+  };
+
   const sendMessage = async (text) => {
     const trimmed = (text || input).trim();
     if (!trimmed || loading) return;
@@ -45,51 +94,34 @@ export default function ChatPanel({
     setLoading(true);
 
     try {
-      const settings = await base44.entities.AppSettings.list();
-const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
-
-let agentUrl = (urlSetting?.value || "https://enllac-agent.onrender.com/chat").trim();
-
-// Si no termina en /chat, añadirlo automáticamente
-if (!agentUrl.endsWith("/chat")) {
-  agentUrl = agentUrl.replace(/\/+$/, "") + "/chat";
-}
-
-console.log("AppSettings:", settings);
-console.log("URL setting found:", urlSetting);
-console.log("Agent URL final:", agentUrl);
       const payload = {
         language: lang,
         scenario: scenario || "libre",
         winery: {
           name: winery?.nombre || winery?.name || "Oriol Rossell",
           slug: winery?.slug || "demo",
-          brand_tone: winery?.tono_marca || winery?.brand_tone || "",
-          brief_history: winery?.historia_breve || winery?.brief_history || "",
-          short_description: winery?.descripcion_corta || winery?.short_description || "",
-          value_proposition: winery?.propuesta_valor || winery?.value_proposition || "",
-          faqs: winery?.faqs_texto || winery?.faqs || "",
-          recommendation_rules: winery?.reglas_recomendacion || "",
-          objection_rules: winery?.reglas_objeciones || "",
+          brand_tone: truncateText(winery?.tono_marca || winery?.brand_tone || "", 300),
+          short_description: truncateText(winery?.descripcion_corta || winery?.short_description || "", 600),
+          value_proposition: truncateText(winery?.propuesta_valor || winery?.value_proposition || "", 500),
+          faqs: truncateText(winery?.faqs_texto || winery?.faqs || "", 1800),
+          recommendation_rules: truncateText(winery?.reglas_recomendacion || "", 700),
+          objection_rules: truncateText(winery?.reglas_objeciones || "", 700)
         },
         experiences: (experiences || []).map((exp) => ({
           id: exp.experience_id || exp.id,
-          title_ca: exp.nombre_ca || exp.title_ca,
-          title_es: exp.nombre_es || exp.title_es,
-          title_en: exp.nombre_en || exp.title_en,
-          description_ca: exp.descripcion_ca || exp.description_ca,
-          description_es: exp.descripcion_es || exp.description_es,
-          description_en: exp.descripcion_en || exp.description_en,
+          title: getLocalizedValue(exp, "title"),
+          description: truncateText(getLocalizedValue(exp, "description"), 500),
           price: exp.precio ?? exp.price ?? null,
           currency: exp.moneda || exp.currency || "EUR",
           duration: exp.duracion || exp.duration || null,
           min_people: exp.minimo_personas || exp.min_people || null,
-          max_people: exp.maximo_personas || exp.max_people || null,
+          max_people: exp.maximo_personas || exp.max_people || null
         })),
         lead: { name: "", phone: "", email: "" },
         messages: newMessages
           .filter((m) => m.role === "user" || m.role === "assistant")
-          .map((m) => ({ role: m.role, content: m.content })),
+          .slice(-8)
+          .map((m) => ({ role: m.role, content: m.content }))
       };
 
       console.log("Agent URL:", agentUrl);
@@ -98,7 +130,7 @@ console.log("Agent URL final:", agentUrl);
       const res = await fetch(agentUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
 
       console.log("Response status:", res.status);
@@ -145,8 +177,8 @@ console.log("Agent URL final:", agentUrl);
         ...prev,
         {
           role: "assistant",
-          content: errorMessage,
-        },
+          content: errorMessage
+        }
       ]);
     } finally {
       setLoading(false);
