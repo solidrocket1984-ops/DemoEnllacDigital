@@ -131,7 +131,7 @@ export default function DemoCeller() {
     }
   };
 
-  const wineryDisplay = activeWinery || { nombre: "Celler Demo", slug: "demo" };
+  const wineryDisplay = activeWinery || { nombre: "Oriol Rossell", slug: "demo" };
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-16 sm:pb-0">
