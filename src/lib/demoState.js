@@ -8,13 +8,18 @@ function safeStorage() {
   return window.localStorage;
 }
 
+function safeNormalize(value) {
+  return String(value || "").trim();
+}
+
 export function getStoredSector() {
   return safeStorage()?.getItem(STORAGE_KEYS.sector) || null;
 }
 
 export function setStoredSector(sector) {
-  if (!sector) return;
-  safeStorage()?.setItem(STORAGE_KEYS.sector, sector);
+  const normalized = safeNormalize(sector).toLowerCase();
+  if (!normalized) return;
+  safeStorage()?.setItem(STORAGE_KEYS.sector, normalized);
 }
 
 export function getStoredAccountSlug() {
@@ -22,10 +27,21 @@ export function getStoredAccountSlug() {
 }
 
 export function setStoredAccountSlug(accountSlug) {
-  if (!accountSlug) return;
-  safeStorage()?.setItem(STORAGE_KEYS.accountSlug, accountSlug);
+  const normalized = safeNormalize(accountSlug).toLowerCase();
+  if (!normalized) return;
+  safeStorage()?.setItem(STORAGE_KEYS.accountSlug, normalized);
 }
 
 export function clearStoredAccountSlug() {
   safeStorage()?.removeItem(STORAGE_KEYS.accountSlug);
+}
+
+export function resolveDemoUrlState({ routeSector, querySector, queryAccount, selectedSector, selectedAccountSlug }) {
+  return {
+    routeSector: safeNormalize(routeSector).toLowerCase() || null,
+    querySector: safeNormalize(querySector).toLowerCase() || null,
+    queryAccount: safeNormalize(queryAccount).toLowerCase() || null,
+    selectedSector: safeNormalize(selectedSector).toLowerCase() || null,
+    selectedAccountSlug: safeNormalize(selectedAccountSlug).toLowerCase() || null,
+  };
 }

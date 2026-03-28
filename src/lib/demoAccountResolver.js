@@ -1,4 +1,4 @@
-import { mapWineryToBusinessProfile } from "@/lib/entityAdapters";
+import { mapWineryToBusinessProfile } from "./entityAdapters.js";
 
 function normalize(value) {
   return String(value || "").trim().toLowerCase();
@@ -36,10 +36,10 @@ export function getDefaultAccountBySector(settings = [], sector) {
   return normalize(sectorSetting || globalSetting);
 }
 
-export function resolveDemoAccount({ accounts = [], settings = [], activeSector, requestedAccountSlug }) {
+export function resolveDemoAccount({ accounts = [], settings = [], activeSector, requestedAccountSlug, selectedAccountSlug }) {
   const normalizedSector = normalize(activeSector);
   const defaultSlug = getDefaultAccountBySector(settings, normalizedSector);
-  const explicitSlug = normalize(requestedAccountSlug);
+  const explicitSlug = normalize(requestedAccountSlug) || normalize(selectedAccountSlug);
 
   const sorted = [...accounts]
     .filter((account) => account?.activa !== false)

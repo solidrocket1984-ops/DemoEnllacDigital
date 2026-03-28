@@ -1,3 +1,4 @@
+import { textToList } from "./textToList.js";
 function safeJsonParse(rawValue, fallback = null) {
   if (!rawValue) return fallback;
   if (typeof rawValue === "object") return rawValue;
@@ -24,9 +25,9 @@ export function mapWineryToBusinessProfile(winery) {
     tone: winery.tono_marca || winery.brand_tone || "",
     history: winery.historia_breve || winery.brief_history || "",
     valueProposition: winery.propuesta_valor || winery.value_proposition || "",
-    faqs: winery.faqs_texto || winery.faqs || "",
+    faqs: textToList(winery.faqs_texto || winery.faqs),
     cta: winery.cta || "",
-    suggestedPrompts: safeJsonParse(winery.prompts_sugeridos, []),
+    suggestedPrompts: textToList(safeJsonParse(winery.prompts_sugeridos, winery.prompts_sugeridos || [])),
     heroOverride: safeJsonParse(winery.hero_override, null),
     endpointOverride: winery.agent_endpoint_override || "",
     tokenOverride: winery.agent_token_override || "",
