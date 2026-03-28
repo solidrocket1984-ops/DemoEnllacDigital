@@ -63,8 +63,8 @@ async function parseResponseBody(response) {
 }
 
 export async function postToAgent({ agentConfig, payload, requestId }) {
-  const headers = { "Content-Type": "application/json", "X-Demo-Request-Id": requestId };
-  if (agentConfig.token) headers.Authorization = `Bearer ${agentConfig.token}`;
+const headers = { "Content-Type": "application/json", "X-Request-Id": requestId };
+if (agentConfig.token) headers["X-Agent-Token"] = agentConfig.token;
 
   if (!agentConfig.urls?.length) {
     throw new Error("No hi ha cap endpoint d'agent configurat. Revisa Admin > Settings.");
