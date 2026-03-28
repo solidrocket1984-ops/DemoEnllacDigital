@@ -25,3 +25,32 @@ test('buildAgentPayload normalizes list fields and empty email', () => {
   assert.equal(payload.lead.email, null);
   assert.equal(payload.experiences[0].title, 'Visita');
 });
+
+test('buildAgentPayload builds metadata for sector generic demo', () => {
+  const payload = buildAgentPayload({
+    lang: 'es',
+    scenario: 'libre',
+    sector: 'professional_services',
+    sourceType: 'sector_demo',
+    account: {
+      id: 'sector-demo-professional-services',
+      nombre: 'Nexia Advisory (Demo)',
+      slug: 'sector-demo-professional-services',
+      sector: 'professional_services',
+      is_generic_sector_demo: true,
+      faqs_texto: ['¿Trabajáis con pymes?'],
+      reglas_recomendacion: ['Si no hay diagnóstico, auditoría inicial.'],
+      reglas_objeciones: ['Si hay urgencia, formato sprint.'],
+      prompts_sugeridos: ['Necesito asesoramiento'],
+    },
+    experiences: [{ id: 'ps-audit', nombre: 'Auditoría inicial', descripcion: 'Desc' }],
+    messages: [{ role: 'user', content: 'Quiero ayuda' }],
+  });
+
+  assert.equal(payload.metadata.source_type, 'sector_demo');
+  assert.equal(payload.metadata.sector, 'professional_services');
+  assert.equal(payload.metadata.account_slug, 'sector-demo-professional-services');
+  assert.equal(payload.metadata.is_generic_sector_demo, true);
+  assert.equal(payload.businessContext.sourceType, 'sector_demo');
+  assert.equal(payload.offers[0].id, 'ps-audit');
+});

@@ -21,8 +21,8 @@ VITE_BASE44_APP_BASE_URL=...
 ### URLs soportadas
 - `/demo`
 - `/demo/:sector`
-- `/demo/:sector?account=<slug>`
-- `/demo?sector=<sector>&account=<slug>`
+- `/demo/:sector?account=<slug>&source=<base44|sector_demo>`
+- `/demo?sector=<sector>&account=<slug>&source=<base44|sector_demo>`
 
 ### Prioridad de sector (centralizada en `src/lib/sectorResolver.js`)
 1. `:sector` de ruta.
@@ -41,6 +41,18 @@ VITE_BASE44_APP_BASE_URL=...
 6. Fallback neutral.
 
 > La app ya no depende de “la primera Winery pública activa” sin contexto sectorial.
+
+### Modo de datos: cuenta real vs demo genérica
+- `source=base44`: usa cuenta real seleccionada (si el slug existe y pertenece al sector activo).
+- `source=sector_demo`: fuerza demo genérica por sector sin depender de Base44 para ofertas/experiencias.
+- Si no hay cuenta real válida para el sector o se fuerza modo genérico, el resolver cae en `src/config/demoSectorData.js`.
+
+El resolver (`src/lib/demoAccountResolver.js`) devuelve siempre:
+- `account`
+- `businessProfile`
+- `availableAccounts`
+- `sourceType` (`base44` o `sector_demo`)
+
 
 ## Configuración de cliente demo desde Admin
 

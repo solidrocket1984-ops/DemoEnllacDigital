@@ -39,6 +39,7 @@ export default function ChatPanel({
   experiences,
   settings,
   sector,
+  sourceType,
 }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -91,6 +92,7 @@ export default function ChatPanel({
         sector,
         account,
         experiences,
+        sourceType,
       });
 
       const agentConfig = resolveAgentConfig({ settings, account });

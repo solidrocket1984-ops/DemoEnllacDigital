@@ -1,6 +1,7 @@
 const STORAGE_KEYS = {
   sector: "demo:selected_sector",
   accountSlug: "demo:selected_account_slug",
+  sourceType: "demo:selected_source_type",
 };
 
 function safeStorage() {
@@ -40,21 +41,34 @@ export function clearStoredAccountSlug() {
   safeStorage()?.removeItem(STORAGE_KEYS.accountSlug);
 }
 
-export function resolveDemoUrlState({ routeSector, querySector, queryAccount, selectedSector, selectedAccountSlug }) {
+export function getStoredSourceType() {
+  return safeStorage()?.getItem(STORAGE_KEYS.sourceType) || null;
+}
+
+export function setStoredSourceType(sourceType) {
+  const normalized = normalizeLower(sourceType);
+  if (!normalized) return;
+  safeStorage()?.setItem(STORAGE_KEYS.sourceType, normalized);
+}
+
+export function resolveDemoUrlState({ routeSector, querySector, queryAccount, querySourceType, selectedSector, selectedAccountSlug, selectedSourceType }) {
   return {
     routeSector: normalizeLower(routeSector) || null,
     querySector: normalizeLower(querySector) || null,
     queryAccount: normalizeLower(queryAccount) || null,
+    querySourceType: normalizeLower(querySourceType) || null,
     selectedSector: normalizeLower(selectedSector) || null,
     selectedAccountSlug: normalizeLower(selectedAccountSlug) || null,
+    selectedSourceType: normalizeLower(selectedSourceType) || null,
   };
 }
 
-export function buildDemoSearchParams({ currentSearch, routeSector, activeSectorId, activeAccountSlug }) {
+export function buildDemoSearchParams({ currentSearch, routeSector, activeSectorId, activeAccountSlug, sourceType }) {
   const next = new URLSearchParams(currentSearch);
   const normalizedRouteSector = normalizeLower(routeSector);
   const normalizedActiveSector = normalizeLower(activeSectorId) || "neutral";
   const normalizedActiveAccount = normalizeLower(activeAccountSlug) || "demo";
+  const normalizedSourceType = normalizeLower(sourceType) || "sector_demo";
 
   if (normalizedRouteSector) {
     next.delete("sector");
@@ -63,6 +77,7 @@ export function buildDemoSearchParams({ currentSearch, routeSector, activeSector
   }
 
   next.set("account", normalizedActiveAccount);
+  next.set("source", normalizedSourceType);
 
   const currentString = new URLSearchParams(currentSearch).toString();
   const nextString = next.toString();
