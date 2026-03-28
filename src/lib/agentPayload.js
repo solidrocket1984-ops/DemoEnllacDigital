@@ -31,10 +31,13 @@ function mapExperienceForAgent(exp = {}, lang = "ca") {
   };
 }
 
-export function buildAgentPayload({ lang, scenario, messages, sector, account, experiences = [], lead = {} }) {
+export function buildAgentPayload({ lang, scenario, messages, sector, account, experiences = [], lead = {}, sourceType = "base44" }) {
   const businessProfile = mapWineryToBusinessProfile(account);
   const services = experiences.map(mapExperienceToService).filter(Boolean);
-  const normalizedSector = normalizeSectorId(sector);
+  const normalizedSector = normalizeSectorId(sector || account?.sector);
+  const normalizedSourceType = String(sourceType || account?.source_type || "base44").trim().toLowerCase();
+  const isGenericSectorDemo = normalizedSourceType === "sector_demo" || account?.is_generic_sector_demo === true;
+
   const faqs = textToList(account?.faqs_texto || account?.faqs || businessProfile?.faqs);
   const recommendationRules = textToList(account?.reglas_recomendacion || account?.recommendation_rules);
   const objectionRules = textToList(account?.reglas_objeciones || account?.objection_rules);
@@ -64,6 +67,11 @@ export function buildAgentPayload({ lang, scenario, messages, sector, account, e
       availableLanguages: account?.idiomas_disponibles || ["ca", "es", "en"],
       defaultLanguage: account?.idioma_defecto || lang,
       suggestedPrompts,
+      faqs,
+      recommendationRules,
+      objectionRules,
+      sourceType: normalizedSourceType,
+      isGenericSectorDemo,
     },
     winery: {
       name: businessProfile?.name,
@@ -86,10 +94,12 @@ export function buildAgentPayload({ lang, scenario, messages, sector, account, e
     conversation: normalizeMessages(messages),
     messages: normalizeMessages(messages), // legacy compatibility
     metadata: {
+      source: "public_demo",
+      source_type: normalizedSourceType,
+      sector: normalizedSector,
       account_slug: businessProfile?.slug,
       account_name: businessProfile?.name,
-      sector: normalizedSector,
-      source: "public_demo",
+      is_generic_sector_demo: isGenericSectorDemo,
     },
   };
 }

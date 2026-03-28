@@ -16,8 +16,8 @@ import MobileBar from "@/components/demo-celler/MobileBar";
 import { scenarioMap, translations } from "@/components/demo-celler/translations";
 import { brandConfig } from "@/config/brandConfig";
 import { sectorPresets } from "@/config/sectorPresets";
-import { buildDemoSearchParams, clearStoredAccountSlug, getStoredAccountSlug, getStoredSector, resolveDemoUrlState, setStoredAccountSlug, setStoredSector } from "@/lib/demoState";
-import { resolveDemoAccount } from "@/lib/demoAccountResolver";
+import { buildDemoSearchParams, clearStoredAccountSlug, getStoredAccountSlug, getStoredSector, getStoredSourceType, resolveDemoUrlState, setStoredAccountSlug, setStoredSector, setStoredSourceType } from "@/lib/demoState";
+import { resolveDemoAccount, resolveDemoOffers } from "@/lib/demoAccountResolver";
 import { resolveSector } from "@/lib/sectorResolver";
 import { resetDemoSessionId } from "@/lib/useDemoSession";
 import { simulateExport, upsertLead } from "@/lib/leadService";
@@ -31,7 +31,8 @@ export default function DemoCeller() {
   const [searchParams, setSearchParams] = useSearchParams();
   const querySector = searchParams.get("sector");
   const queryAccount = searchParams.get("account");
-  const urlState = resolveDemoUrlState({ routeSector, querySector, queryAccount, selectedSector: getStoredSector(), selectedAccountSlug: getStoredAccountSlug() });
+  const querySourceType = searchParams.get("source");
+  const urlState = resolveDemoUrlState({ routeSector, querySector, queryAccount, querySourceType, selectedSector: getStoredSector(), selectedAccountSlug: getStoredAccountSlug(), selectedSourceType: getStoredSourceType() });
 
   const { user } = useAuth();
   const access = resolveClientAccess(user);
@@ -46,6 +47,7 @@ export default function DemoCeller() {
   const [showLeadsDB, setShowLeadsDB] = useState(false);
   const [selectedSector, setSelectedSector] = useState(() => getStoredSector());
   const [selectedAccountSlug, setSelectedAccountSlug] = useState(() => getStoredAccountSlug());
+  const [preferredSourceType, setPreferredSourceType] = useState(() => getStoredSourceType());
 
   const demoRef = useRef(null);
   const t = translations[lang];
@@ -67,7 +69,7 @@ export default function DemoCeller() {
     [hasRouteSector, urlState.routeSector, urlState.querySector, selectedSector, access?.sector, settings]
   );
 
-  const { account: activeAccount, businessProfile, availableAccounts } = useMemo(
+  const { account: activeAccount, businessProfile, availableAccounts, sourceType } = useMemo(
     () =>
       resolveDemoAccount({
         accounts: wineries,
@@ -75,8 +77,9 @@ export default function DemoCeller() {
         activeSector: activeSector.id,
         requestedAccountSlug: urlState.queryAccount,
         selectedAccountSlug,
+        forceSourceType: urlState.querySourceType || preferredSourceType,
       }),
-    [wineries, settings, activeSector.id, urlState.queryAccount, selectedAccountSlug]
+    [wineries, settings, activeSector.id, urlState.queryAccount, selectedAccountSlug, urlState.querySourceType, preferredSourceType]
   );
 
   useEffect(() => {
@@ -88,21 +91,30 @@ export default function DemoCeller() {
   }, [activeAccount?.slug]);
 
   useEffect(() => {
+    if (!sourceType) return;
+    setStoredSourceType(sourceType);
+    setPreferredSourceType(sourceType);
+  }, [sourceType]);
+
+  useEffect(() => {
     const { changed, next } = buildDemoSearchParams({
       currentSearch: searchParams,
       routeSector: hasRouteSector ? activeSector.id : null,
       activeSectorId: activeSector.id,
       activeAccountSlug: activeAccount?.slug || "demo",
+      sourceType,
     });
     if (!changed) return;
     setSearchParams(next, { replace: true });
-  }, [searchParams, hasRouteSector, activeSector.id, activeAccount?.slug, setSearchParams]);
+  }, [searchParams, hasRouteSector, activeSector.id, activeAccount?.slug, sourceType, setSearchParams]);
 
-  const { data: experiences = [] } = useQuery({
-    queryKey: ["experiences-public", activeAccount?.id],
+  const { data: base44Experiences = [] } = useQuery({
+    queryKey: ["experiences-public", activeAccount?.id, sourceType],
     queryFn: () => (activeAccount?.id ? base44.entities.Experience.filter({ winery_id: activeAccount.id, activa: true }) : Promise.resolve([])),
-    enabled: Boolean(activeAccount?.id),
+    enabled: Boolean(activeAccount?.id) && sourceType === "base44",
   });
+
+  const experiences = useMemo(() => resolveDemoOffers({ sourceType, account: activeAccount, base44Experiences, activeSector: activeSector.id }), [sourceType, activeAccount, base44Experiences, activeSector.id]);
 
   useEffect(() => {
     if (messages.length > 0) return;
@@ -186,6 +198,8 @@ export default function DemoCeller() {
     setSelectedAccountSlug("");
     resetDemoInteraction();
 
+    setPreferredSourceType("sector_demo");
+
     if (hasRouteSector) {
       navigate(`/demo/${nextSector}`);
       return;
@@ -200,6 +214,8 @@ export default function DemoCeller() {
   const handleAccountChange = (slug) => {
     setSelectedAccountSlug(slug);
     setStoredAccountSlug(slug);
+    setPreferredSourceType("base44");
+    setStoredSourceType("base44");
     resetDemoInteraction();
   };
 
@@ -228,7 +244,7 @@ export default function DemoCeller() {
               <SelectContent>
                 {availableAccounts.map((account) => (
                   <SelectItem key={account.id || account.slug} value={account.slug || "demo"}>
-                    {(account.nombre || account.name || "Demo")} {account.demo_publica ? "· pública" : ""}
+                    {(account.nombre || account.name || "Demo")} {account.demo_publica ? "· pública" : ""} {account.is_generic_sector_demo ? "· sector" : "· real"}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -250,7 +266,7 @@ export default function DemoCeller() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
             <div className="lg:col-span-2"><ExamplesPanel t={t} onExampleClick={handleExampleClick} promptOverrides={promptsFromAccount || sectorSpecific.prompts} /></div>
-            <div className="lg:col-span-5"><ChatPanel t={t} lang={lang} scenario={scenario} messages={messages} setMessages={setMessages} onAgentResponse={handleAgentResponse} pendingExample={pendingExample} clearPendingExample={() => setPendingExample(null)} account={activeAccount} experiences={experiences} settings={settings} sector={activeSector} /></div>
+            <div className="lg:col-span-5"><ChatPanel t={t} lang={lang} scenario={scenario} messages={messages} setMessages={setMessages} onAgentResponse={handleAgentResponse} pendingExample={pendingExample} clearPendingExample={() => setPendingExample(null)} account={activeAccount} experiences={experiences} settings={settings} sector={activeSector} sourceType={sourceType} /></div>
             <div className="lg:col-span-5 space-y-4"><LeadPanel t={t} leadData={leadData} experiences={experiences} /><LeadSavedCard savedLead={savedLead} onExport={savedLead?.exportStatus !== "exported" ? handleExportLead : null} /></div>
           </div>
         </div>
