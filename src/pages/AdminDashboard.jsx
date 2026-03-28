@@ -5,8 +5,8 @@ import { Wine, Sparkles, HelpCircle, Settings, BarChart3, Users } from "lucide-r
 
 export default function AdminDashboard() {
   const sections = [
-    { icon: Wine, label: "Bodegues", path: "/admin/wineries", color: "from-purple-500 to-purple-600" },
-    { icon: Sparkles, label: "Experiències", path: "/admin/experiences", color: "from-amber-500 to-amber-600" },
+    { icon: Wine, label: "Comptes", path: "/admin/accounts", color: "from-purple-500 to-purple-600" },
+    { icon: Sparkles, label: "Serveis", path: "/admin/services", color: "from-amber-500 to-amber-600" },
     { icon: HelpCircle, label: "FAQs", path: "/admin/faqs", color: "from-blue-500 to-blue-600" },
     { icon: Users, label: "Leads", path: "/admin/leads", color: "from-emerald-500 to-emerald-600" },
     { icon: BarChart3, label: "Simulació", path: "/admin/simulation", color: "from-rose-500 to-rose-600" },
@@ -46,14 +46,14 @@ export default function AdminDashboard() {
         <div className="mt-12 bg-gradient-to-br from-[#722F37] to-[#5C252D] rounded-2xl p-8 text-white shadow-xl">
           <h2 className="text-2xl font-bold mb-3">Benvingut al panell de gestió</h2>
           <p className="text-white/90 mb-6 leading-relaxed">
-            Des d'aquí pots configurar les bodegues, experiències, FAQs i regles d'intel·ligència artificial
+            Des d'aquí pots configurar les comptes, experiències, FAQs i regles d'intel·ligència artificial
             per personalitzar completament el comportament dels assistents.
           </p>
           <Link
-            to="/admin/wineries"
+            to="/admin/accounts"
             className="inline-block px-6 py-3 bg-white text-[#722F37] rounded-lg font-medium hover:bg-stone-100 transition-colors"
           >
-            Començar amb les bodegues
+            Començar amb les comptes
           </Link>
         </div>
       </div>

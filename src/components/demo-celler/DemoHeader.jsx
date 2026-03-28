@@ -1,43 +1,36 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Mail, Settings } from "lucide-react";
+import { brandConfig } from "@/config/brandConfig";
 
 const langLabels = { ca: "Català", es: "Castellano", en: "English" };
-const adminLabels = { ca: "Gestió", es: "Gestión", en: "Admin" };
+const adminLabels = { ca: "Panell", es: "Panel", en: "Admin" };
 
-export default function DemoHeader({ lang, setLang, t, winery }) {
-  const wineryName = winery?.nombre || winery?.name || null;
+export default function DemoHeader({ lang, setLang, winery }) {
+  const businessName = winery?.nombre || winery?.name || null;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#722F37] to-[#9B4550] flex items-center justify-center shadow-sm">
-            <span className="text-white font-bold text-sm">ED</span>
+            <span className="text-white font-bold text-sm">AI</span>
           </div>
           <div className="hidden sm:block">
-            <span className="font-semibold text-[#2D1B14] text-sm">Enllaç Digital</span>
-            {wineryName && (
-              <span className="text-xs text-stone-400 ml-2">· Demo: {wineryName}</span>
-            )}
+            <span className="font-semibold text-[#2D1B14] text-sm">{brandConfig.brandName}</span>
+            {businessName && <span className="text-xs text-stone-400 ml-2">· Demo: {businessName}</span>}
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <a href="mailto:info@enlacdigital.cat" className="hidden md:flex items-center gap-1.5 text-xs text-stone-600 hover:text-[#722F37] transition-colors">
+          <a href={`mailto:${brandConfig.contactEmail}`} className="hidden md:flex items-center gap-1.5 text-xs text-stone-600 hover:text-[#722F37] transition-colors">
             <Mail className="w-3.5 h-3.5" />
             Contacte
           </a>
 
           <div className="flex items-center gap-1 bg-stone-100 rounded-full p-0.5">
             {Object.entries(langLabels).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setLang(key)}
-                className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  lang === key ? "bg-[#722F37] text-white shadow-sm" : "text-stone-600 hover:text-[#722F37]"
-                }`}
-              >
+              <button key={key} onClick={() => setLang(key)} className={`px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium transition-all ${lang === key ? "bg-[#722F37] text-white shadow-sm" : "text-stone-600 hover:text-[#722F37]"}`}>
                 {label}
               </button>
             ))}

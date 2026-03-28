@@ -19,7 +19,7 @@ export default function HeroSection({ t, onDemoClick }) {
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#722F37]/10 text-[#722F37] text-xs font-medium mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-[#722F37] animate-pulse" />
-            Enllaç Digital · AI per a cellers
+            Enllaç Digital · AI per a negocis
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#2D1B14] leading-tight mb-6 tracking-tight">

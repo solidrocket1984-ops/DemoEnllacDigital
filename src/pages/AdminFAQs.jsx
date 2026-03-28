@@ -16,7 +16,7 @@ export default function AdminFAQs() {
           </div>
           <h2 className="text-xl font-semibold text-slate-900 mb-2">Gestió de FAQs</h2>
           <p className="text-slate-600 max-w-md mx-auto">
-            Les FAQs es gestionen dins de cada bodega. Ves a la secció de bodegues i edita una bodega
+            Les FAQs es gestionen dins de cada compte. Ves a la secció de comptes i edita una compte
             per afegir o modificar les seves preguntes freqüents.
           </p>
         </div>

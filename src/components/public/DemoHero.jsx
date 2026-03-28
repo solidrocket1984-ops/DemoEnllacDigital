@@ -12,7 +12,7 @@ export default function DemoHero({ t, onDemoClick }) {
       <div className="relative max-w-4xl mx-auto px-4 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#722F37]/10 text-[#722F37] text-xs font-medium mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-[#722F37] animate-pulse" />
-          Demo en viu · Assistent IA per a cellers
+          Demo en viu · Assistent IA per a negocis
         </div>
 
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#2D1B14] leading-tight mb-6">

@@ -56,7 +56,7 @@ export default function ChatPanel({
 const urlSetting = settings.find((s) => s.key === "agent_endpoint_url");
 
 
-let agentUrl = (urlSetting?.value || "https://enllac-agent.onrender.com/chat").trim();
+let agentUrl = (urlSetting?.value || "https://agent.example.com/chat").trim();
 
 
 // Si no termina en /chat, añadirlo automáticamente
@@ -65,14 +65,14 @@ if (!agentUrl.endsWith("/chat")) {
 }
 
 
-console.log("AppSettings:", settings);
-console.log("URL setting found:", urlSetting);
-console.log("Agent URL final:", agentUrl);
+
+
+
       const payload = {
         language: lang,
         scenario: scenario || "libre",
         winery: {
-          name: winery?.nombre || winery?.name || "Oriol Rossell",
+          name: winery?.nombre || winery?.name || "Demo Account",
           slug: winery?.slug || "demo",
           brand_tone: winery?.tono_marca || winery?.brand_tone || "",
           brief_history: winery?.historia_breve || winery?.brief_history || "",
@@ -103,9 +103,6 @@ console.log("Agent URL final:", agentUrl);
       };
 
 
-      console.log("Agent URL:", agentUrl);
-      console.log("Payload sent to agent:", payload);
-
 
       const res = await fetch(agentUrl, {
         method: "POST",
@@ -113,12 +110,6 @@ console.log("Agent URL final:", agentUrl);
         body: JSON.stringify(payload),
       });
 
-
-      console.log("Response status:", res.status);
-
-
-      const rawText = await res.text();
-      console.log("Raw response:", rawText);
 
 
       if (!res.ok) {
@@ -134,8 +125,6 @@ console.log("Agent URL final:", agentUrl);
         throw new Error("La resposta de l'agent no és un JSON vàlid");
       }
 
-
-      console.log("Agent response data:", data);
 
 
       const assistantMsg = {
@@ -190,13 +179,13 @@ console.log("Agent URL final:", agentUrl);
       <div className="px-5 py-3.5 border-b border-stone-100 bg-gradient-to-r from-[#FAF7F2] to-white">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#722F37] to-[#9B4550] flex items-center justify-center">
-            <span className="text-white text-[10px] font-bold">ED</span>
+            <span className="text-white text-[10px] font-bold">AI</span>
           </div>
           <div>
             <p className="text-sm font-semibold text-[#2D1B14]">
-              {winery?.nombre || winery?.name || "Oriol Rossell"}
+              {winery?.nombre || winery?.name || "Demo Account"}
             </p>
-            <p className="text-[11px] text-stone-400">Assistent · Enllaç Digital</p>
+            <p className="text-[11px] text-stone-400">Assistent · IA</p>
           </div>
           <span className="ml-auto w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>

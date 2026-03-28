@@ -52,11 +52,11 @@ export default function AdminSimulation() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">Simulació de l'assistent</h1>
-          <p className="text-sm text-slate-500 mt-1">Prova el comportament de l'assistent amb diferents bodegues</p>
+          <p className="text-sm text-slate-500 mt-1">Prova el comportament de l'assistent amb diferents comptes</p>
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-slate-700 mb-2">Selecciona una bodega</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">Selecciona un compte</label>
           <select
             value={selectedWineryId || ""}
             onChange={(e) => setSelectedWineryId(e.target.value)}
