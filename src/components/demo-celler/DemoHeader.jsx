@@ -6,7 +6,7 @@ import { brandConfig } from "@/config/brandConfig";
 const langLabels = { ca: "Català", es: "Castellano", en: "English" };
 const adminLabels = { ca: "Panell", es: "Panel", en: "Admin" };
 
-export default function DemoHeader({ lang, setLang, winery }) {
+export default function DemoHeader({ lang, setLang, winery, sector }) {
   const businessName = winery?.nombre || winery?.name || null;
 
   return (
@@ -19,6 +19,7 @@ export default function DemoHeader({ lang, setLang, winery }) {
           <div className="hidden sm:block">
             <span className="font-semibold text-[#2D1B14] text-sm">{brandConfig.brandName}</span>
             {businessName && <span className="text-xs text-stone-400 ml-2">· Demo: {businessName}</span>}
+            {sector?.name && <span className="text-xs text-stone-400 ml-2">· Sector: {sector.name}</span>}
           </div>
         </div>
 

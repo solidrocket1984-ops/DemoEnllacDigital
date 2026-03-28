@@ -16,75 +16,39 @@ function shouldSaveLead(agentData) {
   );
 }
 
-/**
- * Extract contact fields from agent data, supporting multiple field name variants
- */
 function extractContactFields(agentData) {
   const contact = {};
+  const merged = { ...agentData, ...(agentData.fields_to_update || {}) };
 
-  // Name variants
-  const name =
-    agentData.lead_name ||
-    agentData.leadName ||
-    agentData.name ||
-    agentData.nombre ||
-    agentData.nom ||
-    agentData.fields_to_update?.lead_name ||
-    agentData.fields_to_update?.name ||
-    agentData.fields_to_update?.nombre ||
-    agentData.fields_to_update?.nom ||
-    null;
+  const name = merged.lead_name || merged.leadName || merged.name || merged.nombre || merged.nom || null;
   if (name) contact.leadName = name;
 
-  // Email variants
-  const email =
-    agentData.lead_email ||
-    agentData.leadEmail ||
-    agentData.email ||
-    agentData.correu ||
-    agentData.fields_to_update?.lead_email ||
-    agentData.fields_to_update?.email ||
-    agentData.fields_to_update?.correu ||
-    null;
+  const email = merged.lead_email || merged.leadEmail || merged.email || merged.correu || null;
   if (email) contact.leadEmail = email;
 
-  // Phone variants
-  const phone =
-    agentData.lead_phone ||
-    agentData.leadPhone ||
-    agentData.phone ||
-    agentData.telefono ||
-    agentData.telefon ||
-    agentData.tel ||
-    agentData.fields_to_update?.lead_phone ||
-    agentData.fields_to_update?.phone ||
-    agentData.fields_to_update?.telefono ||
-    agentData.fields_to_update?.telefon ||
-    null;
+  const phone = merged.lead_phone || merged.leadPhone || merged.phone || merged.telefono || merged.telefon || merged.tel || null;
   if (phone) contact.leadPhone = phone;
 
-  // Date variants
-  const date =
-    agentData.desired_date ||
-    agentData.desiredDate ||
-    agentData.fecha ||
-    agentData.data_visita ||
-    agentData.fields_to_update?.desired_date ||
-    null;
+  const date = merged.desired_date || merged.desiredDate || merged.fecha || merged.data_visita || null;
   if (date) contact.desiredDate = date;
 
   return contact;
 }
 
-/**
- * Creates or updates a CapturedLead based on agent response
- */
-export async function upsertLead({ agentData, messages, winery, experiences, scenario, lang, existingLeadId }) {
+function mergeWithoutEmpty(previous = {}, next = {}) {
+  const merged = { ...previous };
+  for (const [key, value] of Object.entries(next)) {
+    if (value === null || value === undefined || value === "") continue;
+    merged[key] = value;
+  }
+  return merged;
+}
+
+export async function upsertLead({ agentData, messages, winery, experiences, scenario, lang, existingLeadId, sector, accountSlug, accountName }) {
   if (!shouldSaveLead(agentData)) return null;
 
   const sessionId = getDemoSessionId();
 
-  // Resolve experience name
   let experienceName = null;
   const expId = agentData.recommended_experience_id || agentData.fields_to_update?.recommended_experience_id;
   if (expId && experiences?.length > 0) {
@@ -98,7 +62,10 @@ export async function upsertLead({ agentData, messages, winery, experiences, sce
     sessionId,
     source: "public_demo",
     wineryId: winery?.id || winery?.slug || "demo",
-    wineryName: winery?.nombre || winery?.name || "Celler Demo",
+    wineryName: winery?.nombre || winery?.name || accountName || "Demo Account",
+    accountSlug: accountSlug || winery?.slug || "demo",
+    accountName: accountName || winery?.nombre || winery?.name || "Demo Account",
+    sector: sector || winery?.sector || "neutral",
     language: agentData.language || lang,
     scenario: scenario || "libre",
     detectedIntent: agentData.detected_intent || agentData.fields_to_update?.detected_intent || null,
@@ -118,22 +85,14 @@ export async function upsertLead({ agentData, messages, winery, experiences, sce
   };
 
   if (existingLeadId) {
-    // When updating, only overwrite contact fields if the new value is non-null
-    const updatePayload = { ...leadPayload };
-    if (!contactFields.leadName) delete updatePayload.leadName;
-    if (!contactFields.leadEmail) delete updatePayload.leadEmail;
-    if (!contactFields.leadPhone) delete updatePayload.leadPhone;
-    const updated = await base44.entities.CapturedLead.update(existingLeadId, updatePayload);
-    return updated;
-  } else {
-    const created = await base44.entities.CapturedLead.create(leadPayload);
-    return created;
+    const current = await base44.entities.CapturedLead.get(existingLeadId);
+    const updatePayload = mergeWithoutEmpty(current, leadPayload);
+    return base44.entities.CapturedLead.update(existingLeadId, updatePayload);
   }
+
+  return base44.entities.CapturedLead.create(leadPayload);
 }
 
-/**
- * Simulate export to CRM / webhook
- */
 export async function simulateExport(lead, settings = []) {
   const webhookSetting = settings.find((s) => s.key === "export_webhook_url");
   const webhookUrl = webhookSetting?.value;

@@ -5,13 +5,16 @@ import { Heart, Users, Gift, Globe } from "lucide-react";
 const exampleIcons = [Heart, Users, Gift, Globe];
 const exampleKeys = ["example1", "example2", "example3", "example4"];
 
-export default function ExamplesPanel({ t, onExampleClick }) {
+export default function ExamplesPanel({ t, onExampleClick, promptOverrides = [] }) {
+  const prompts = Array.isArray(promptOverrides) && promptOverrides.length > 0 ? promptOverrides.slice(0, 4) : null;
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-[#2D1B14]">{t.examplesTitle}</h3>
       <div className="space-y-2.5">
         {exampleKeys.map((key, i) => {
           const Icon = exampleIcons[i];
+          const label = prompts?.[i] || t[key];
           return (
             <motion.button
               key={key}
@@ -23,7 +26,7 @@ export default function ExamplesPanel({ t, onExampleClick }) {
               <div className="w-9 h-9 rounded-lg bg-white border border-stone-200 flex items-center justify-center shrink-0 group-hover:border-[#722F37]/20 transition-colors">
                 <Icon className="w-4 h-4 text-[#722F37]" />
               </div>
-              <span className="text-sm font-medium text-[#2D1B14]">{t[key]}</span>
+              <span className="text-sm font-medium text-[#2D1B14]">{label}</span>
             </motion.button>
           );
         })}
