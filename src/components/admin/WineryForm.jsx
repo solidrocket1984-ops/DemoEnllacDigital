@@ -87,7 +87,7 @@ export default function WineryForm({ wineryId }) {
         await base44.entities.Winery.update(wineryId, data);
         toast.success("Bodega actualitzada");
       }
-      navigate("/admin/wineries");
+      navigate("/admin/accounts");
     } catch (error) {
       toast.error("Error al guardar");
     } finally {
@@ -102,12 +102,12 @@ export default function WineryForm({ wineryId }) {
       <div className="max-w-5xl mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/wineries")}>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/accounts")}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
-              {wineryId === "new" ? "Nova bodega" : "Editar bodega"}
+              {wineryId === "new" ? "Nova compte" : "Editar compte"}
             </h1>
             <p className="text-sm text-slate-500">Configura les dades per personalitzar l'assistent</p>
           </div>
@@ -124,7 +124,7 @@ export default function WineryForm({ wineryId }) {
           <TabsTrigger value="marca" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Marca</TabsTrigger>
           <TabsTrigger value="comercial" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Comercial</TabsTrigger>
           <TabsTrigger value="faqs" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">FAQs</TabsTrigger>
-          <TabsTrigger value="experiencies" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Experiències</TabsTrigger>
+          <TabsTrigger value="experiencies" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Serveis</TabsTrigger>
           <TabsTrigger value="regles" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Regles IA</TabsTrigger>
           <TabsTrigger value="coneixement" className="flex-1 min-w-[100px] data-[state=active]:bg-[#722F37] data-[state=active]:text-white">Coneixement</TabsTrigger>
         </TabsList>
@@ -133,7 +133,7 @@ export default function WineryForm({ wineryId }) {
           <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Nom de la bodega *</Label>
+                <Label className="text-sm font-semibold text-slate-700 mb-2 block">Nom de la compte *</Label>
                 <Input value={data.nombre} onChange={(e) => update("nombre", e.target.value)} className="h-11" />
               </div>
               <div>
@@ -253,7 +253,7 @@ export default function WineryForm({ wineryId }) {
           <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
             <Label className="text-sm font-semibold text-slate-700 mb-2 block">FAQs (text lliure)</Label>
             <Textarea rows={16} value={data.faqs_texto} onChange={(e) => update("faqs_texto", e.target.value)} placeholder="Enganxa aquí les FAQs en text lliure..." className="resize-none font-mono text-sm" />
-            <p className="text-xs text-slate-500 mt-2">Pots enganxar aquí les FAQs de la bodega en format text lliure.</p>
+            <p className="text-xs text-slate-500 mt-2">Pots enganxar aquí les FAQs de la compte en format text lliure.</p>
           </div>
         </TabsContent>
 
@@ -262,9 +262,9 @@ export default function WineryForm({ wineryId }) {
             <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
               <Eye className="w-7 h-7 text-stone-400" />
             </div>
-            <p className="text-sm font-medium text-slate-700 mb-2">Experiències de la bodega</p>
+            <p className="text-sm font-medium text-slate-700 mb-2">Serveis de la compte</p>
             <p className="text-sm text-slate-500 mb-6">Les experiències es gestionen en una secció independent per a millor organització</p>
-            <Button variant="outline" className="gap-2" onClick={() => navigate("/admin/experiences")}>
+            <Button variant="outline" className="gap-2" onClick={() => navigate("/admin/services")}>
               <Eye className="w-4 h-4" />
               Gestionar experiències
             </Button>

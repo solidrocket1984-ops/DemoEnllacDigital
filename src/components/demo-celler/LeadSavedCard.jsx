@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Database, CheckCircle2, ChevronDown, ChevronUp, ExternalLink, Code2, Send, User, Mail, Phone, Link } from "lucide-react";
+import { Database, CheckCircle2, ChevronDown, ChevronUp, ExternalLink, Code2, Send, User, Mail, Phone } from "lucide-react";
 
 const stageLabels = {
   new: "Nou", qualified: "Qualificat",

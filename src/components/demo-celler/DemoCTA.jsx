@@ -6,10 +6,10 @@ export default function DemoCTA({ t }) {
     <section className="py-16 bg-gradient-to-br from-[#722F37] to-[#5C252D] text-white">
       <div className="max-w-4xl mx-auto px-4 text-center">
         <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-          Vols un assistent així per al teu celler?
+          Vols un assistent així per al teu negoci?
         </h2>
         <p className="text-white/90 mb-8 max-w-2xl mx-auto">
-          Contacta amb nosaltres i descobreix com podem personalitzar l'assistent per a la teva bodega
+          Contacta amb nosaltres i descobreix com podem personalitzar l'assistent per a la teva compte
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a

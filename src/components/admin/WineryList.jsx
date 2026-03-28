@@ -24,13 +24,13 @@ export default function WineryList() {
       <div className="max-w-6xl mx-auto px-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Bodegues configurades</h1>
-          <p className="text-sm text-slate-500 mt-1">Gestiona la configuració de cada celler per personalitzar l'assistent</p>
+          <h1 className="text-2xl font-bold text-slate-900">Comptes configurades</h1>
+          <p className="text-sm text-slate-500 mt-1">Gestiona la configuració de cada negoci per personalitzar l'assistent</p>
         </div>
-        <Link to="/admin/winery/new">
+        <Link to="/admin/business/new">
           <Button className="bg-[#722F37] hover:bg-[#5C252D] shadow-md">
             <Plus className="w-4 h-4 mr-2" />
-            Nova bodega
+            Nova compte
           </Button>
         </Link>
       </div>
@@ -38,7 +38,7 @@ export default function WineryList() {
       <div className="mb-6 relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <Input
-          placeholder="Buscar bodega..."
+          placeholder="Buscar compte..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-11 h-12 shadow-sm"
@@ -49,7 +49,7 @@ export default function WineryList() {
         <div className="text-center py-12 text-slate-500">Carregant...</div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-slate-500">
-          {search ? "Cap bodega trobada" : "Encara no hi ha cap bodega configurada"}
+          {search ? "Cap compte trobada" : "Encara no hi ha cap compte configurada"}
         </div>
       ) : (
         <div className="grid gap-4">
@@ -98,13 +98,13 @@ export default function WineryList() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Link to={`/admin/winery/${winery.id}`}>
+                  <Link to={`/admin/business/${winery.id}`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Edit className="w-4 h-4" />
                       Editar
                     </Button>
                   </Link>
-                  <Link to={`/admin/winery/${winery.id}/test`}>
+                  <Link to={`/admin/business/${winery.id}/test`}>
                     <Button variant="outline" size="sm" className="gap-2">
                       <Eye className="w-4 h-4" />
                       Provar

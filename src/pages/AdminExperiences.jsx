@@ -51,7 +51,7 @@ export default function AdminExperiences() {
       queryClient.invalidateQueries({ queryKey: ["experiences"] });
       setDialogOpen(false);
       setEditingExp(null);
-      toast.success("Experiència creada");
+      toast.success("Servei creada");
     },
   });
 
@@ -61,7 +61,7 @@ export default function AdminExperiences() {
       queryClient.invalidateQueries({ queryKey: ["experiences"] });
       setDialogOpen(false);
       setEditingExp(null);
-      toast.success("Experiència actualitzada");
+      toast.success("Servei actualitzada");
     },
   });
 
@@ -69,7 +69,7 @@ export default function AdminExperiences() {
     mutationFn: (id) => base44.entities.Experience.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["experiences"] });
-      toast.success("Experiència eliminada");
+      toast.success("Servei eliminada");
     },
   });
 
@@ -124,8 +124,8 @@ export default function AdminExperiences() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Experiències</h1>
-            <p className="text-sm text-slate-500 mt-1">Gestiona les experiències de cada bodega</p>
+            <h1 className="text-2xl font-bold text-slate-900">Serveis</h1>
+            <p className="text-sm text-slate-500 mt-1">Gestiona les serveis de cada compte</p>
           </div>
           <Button onClick={handleNew} disabled={!selectedWineryId} className="bg-[#722F37] hover:bg-[#5C252D] shadow-md">
             <Plus className="w-4 h-4 mr-2" />
@@ -135,10 +135,10 @@ export default function AdminExperiences() {
 
         <div className="mb-6 space-y-4">
           <div>
-            <Label className="text-sm font-medium text-slate-700 mb-2 block">Bodega</Label>
+            <Label className="text-sm font-medium text-slate-700 mb-2 block">Compte</Label>
             <Select value={selectedWineryId || ""} onValueChange={setSelectedWineryId}>
               <SelectTrigger className="w-full sm:w-auto min-w-[250px]">
-                <SelectValue placeholder="Selecciona una bodega" />
+                <SelectValue placeholder="Selecciona un compte" />
               </SelectTrigger>
               <SelectContent>
                 {wineries.map((w) => (
@@ -162,10 +162,10 @@ export default function AdminExperiences() {
         </div>
 
         {!selectedWineryId ? (
-          <div className="text-center py-12 text-slate-500">Selecciona una bodega per veure les seves experiències</div>
+          <div className="text-center py-12 text-slate-500">Selecciona un compte per veure les seves serveis</div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-12 text-slate-500">
-            {search ? "Cap experiència trobada" : "Encara no hi ha experiències. Crea la primera!"}
+            {search ? "Cap experiència trobada" : "Encara no hi ha serveis. Crea la primera!"}
           </div>
         ) : (
           <div className="grid gap-4">
@@ -243,7 +243,7 @@ export default function AdminExperiences() {
               <div className="space-y-5 mt-4">
                 <div className="flex items-center gap-3 p-3 bg-stone-50 rounded-lg">
                   <Switch checked={editingExp.activa} onCheckedChange={(v) => update("activa", v)} id="activa" />
-                  <Label htmlFor="activa" className="cursor-pointer font-medium">Experiència activa</Label>
+                  <Label htmlFor="activa" className="cursor-pointer font-medium">Servei activa</Label>
                 </div>
 
                 <div className="space-y-4">

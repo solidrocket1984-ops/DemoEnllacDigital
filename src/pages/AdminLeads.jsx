@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Search, Users, Mail, Phone, Calendar, Sparkles, ChevronRight, Trash2, Send, Code2, Eye, User } from "lucide-react";
+import { Search, Users, Mail, Phone, Calendar, Sparkles, ChevronRight, Trash2, Send, Code2, User } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { simulateExport } from "../lib/leadService";
@@ -147,7 +146,7 @@ export default function AdminLeads() {
                 <SelectValue placeholder="Celler" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tots els cellers</SelectItem>
+                <SelectItem value="all">Tots els negocis</SelectItem>
                 {wineryOptions.map((w) => (
                   <SelectItem key={w} value={w}>{w}</SelectItem>
                 ))}

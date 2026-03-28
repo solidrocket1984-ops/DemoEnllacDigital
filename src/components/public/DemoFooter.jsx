@@ -16,7 +16,7 @@ export default function DemoFooter({ t, lang = "ca" }) {
               </div>
               <span className="font-semibold text-white text-sm">Enllaç Digital</span>
             </div>
-            <p className="text-xs text-stone-400 max-w-xs">Assistents intel·ligents per a cellers</p>
+            <p className="text-xs text-stone-400 max-w-xs">Assistents intel·ligents per a negocis</p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <a href="tel:686373615" className="flex items-center gap-2 text-xs hover:text-white transition-colors">

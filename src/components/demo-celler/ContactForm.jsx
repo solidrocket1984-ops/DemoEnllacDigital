@@ -4,7 +4,7 @@ import { Send, CheckCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 export default function ContactForm({ t }) {
-  const [form, setForm] = useState({ nom: "", celler: "", telefon: "", email: "", missatge: "" });
+  const [form, setForm] = useState({ nom: "", negoci: "", telefon: "", email: "", missatge: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
 
@@ -68,8 +68,8 @@ export default function ContactForm({ t }) {
                 <label className="block text-xs font-medium text-stone-600 mb-1.5">{t.contactCeller}</label>
                 <input
                   type="text"
-                  value={form.celler}
-                  onChange={(e) => handleChange("celler", e.target.value)}
+                  value={form.negoci}
+                  onChange={(e) => handleChange("negoci", e.target.value)}
                   className="w-full border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#722F37]/20 focus:border-[#722F37]/30 transition-all"
                 />
               </div>
