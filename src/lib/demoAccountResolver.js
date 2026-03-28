@@ -52,9 +52,10 @@ export function resolveDemoAccount({ accounts = [], settings = [], activeSector,
   });
 
   const bySlug = (list, slug) => list.find((account) => normalize(account.slug) === slug);
+  const explicitPool = normalizedSector && normalizedSector !== "neutral" ? inSector : sorted;
 
   const resolved =
-    (explicitSlug && bySlug(sorted, explicitSlug)) ||
+    (explicitSlug && bySlug(explicitPool, explicitSlug)) ||
     (defaultSlug && bySlug(inSector, defaultSlug)) ||
     inSector.find((account) => account.demo_publica) ||
     inSector[0] ||

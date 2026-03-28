@@ -14,7 +14,6 @@ export function resolveSectorId({
   querySector,
   selectedSector,
   defaultSector,
-  accountSector,
   settings,
 } = {}) {
   const defaultSectorSetting = getSettingValue(settings, "default_sector");
@@ -25,7 +24,6 @@ export function resolveSectorId({
     normalizeSector(querySector),
     normalizeSector(selectedSector),
     normalizeSector(defaultSectorSetting),
-    normalizeSector(accountSector),
     fallbackSector,
   ].filter(Boolean);
 

@@ -6,7 +6,12 @@ test('resolveSectorId prioritizes route', () => {
   assert.equal(resolveSectorId({ routeSector: 'clinic', querySector: 'tourism', selectedSector: 'winery' }), 'clinic');
 });
 
-test('resolveSectorId fallback to settings and neutral', () => {
+test('resolveSectorId prioritizes query over manual selection', () => {
+  assert.equal(resolveSectorId({ querySector: 'tourism', selectedSector: 'winery' }), 'tourism');
+});
+
+test('resolveSectorId falls back to manual, settings default and neutral', () => {
+  assert.equal(resolveSectorId({ selectedSector: 'winery' }), 'winery');
   assert.equal(resolveSectorId({ settings: [{ key: 'default_sector', value: 'tourism' }] }), 'tourism');
   assert.equal(resolveSectorId({ routeSector: 'unknown', defaultSector: 'neutral' }), 'neutral');
 });

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Database } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import ChatPanel from "@/components/demo-celler/ChatPanel";
 import DemoFooter from "@/components/demo-celler/DemoFooter";
@@ -16,7 +16,7 @@ import MobileBar from "@/components/demo-celler/MobileBar";
 import { scenarioMap, translations } from "@/components/demo-celler/translations";
 import { brandConfig } from "@/config/brandConfig";
 import { sectorPresets } from "@/config/sectorPresets";
-import { clearStoredAccountSlug, getStoredAccountSlug, getStoredSector, resolveDemoUrlState, setStoredAccountSlug, setStoredSector } from "@/lib/demoState";
+import { buildDemoSearchParams, clearStoredAccountSlug, getStoredAccountSlug, getStoredSector, resolveDemoUrlState, setStoredAccountSlug, setStoredSector } from "@/lib/demoState";
 import { resolveDemoAccount } from "@/lib/demoAccountResolver";
 import { resolveSector } from "@/lib/sectorResolver";
 import { resetDemoSessionId } from "@/lib/useDemoSession";
@@ -26,6 +26,7 @@ import { resolveClientAccess } from "@/lib/access-control";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function DemoCeller() {
+  const navigate = useNavigate();
   const { sector: routeSector } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const querySector = searchParams.get("sector");
@@ -52,16 +53,18 @@ export default function DemoCeller() {
   const { data: wineries = [] } = useQuery({ queryKey: ["wineries-public"], queryFn: () => base44.entities.Winery.list() });
   const { data: settings = [] } = useQuery({ queryKey: ["settings"], queryFn: () => base44.entities.AppSettings.list() });
 
+  const hasRouteSector = Boolean(urlState.routeSector);
+
   const activeSector = useMemo(
     () =>
       resolveSector({
-        routeSector: urlState.routeSector || routeSector,
-        querySector: urlState.querySector || querySector,
+        routeSector: hasRouteSector ? urlState.routeSector : null,
+        querySector: hasRouteSector ? null : urlState.querySector,
         selectedSector,
         defaultSector: access?.sector,
         settings,
       }),
-    [routeSector, querySector, selectedSector, access?.sector, settings]
+    [hasRouteSector, urlState.routeSector, urlState.querySector, selectedSector, access?.sector, settings]
   );
 
   const { account: activeAccount, businessProfile, availableAccounts } = useMemo(
@@ -70,10 +73,10 @@ export default function DemoCeller() {
         accounts: wineries,
         settings,
         activeSector: activeSector.id,
-        requestedAccountSlug: urlState.queryAccount || queryAccount,
+        requestedAccountSlug: urlState.queryAccount,
         selectedAccountSlug,
       }),
-    [wineries, settings, activeSector.id, queryAccount, selectedAccountSlug]
+    [wineries, settings, activeSector.id, urlState.queryAccount, selectedAccountSlug]
   );
 
   useEffect(() => {
@@ -85,11 +88,15 @@ export default function DemoCeller() {
   }, [activeAccount?.slug]);
 
   useEffect(() => {
-    const next = new URLSearchParams(searchParams);
-    next.set("account", activeAccount?.slug || "demo");
-    if (!routeSector) next.set("sector", activeSector.id);
+    const { changed, next } = buildDemoSearchParams({
+      currentSearch: searchParams,
+      routeSector: hasRouteSector ? activeSector.id : null,
+      activeSectorId: activeSector.id,
+      activeAccountSlug: activeAccount?.slug || "demo",
+    });
+    if (!changed) return;
     setSearchParams(next, { replace: true });
-  }, [activeAccount?.slug, activeSector.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams, hasRouteSector, activeSector.id, activeAccount?.slug, setSearchParams]);
 
   const { data: experiences = [] } = useQuery({
     queryKey: ["experiences-public", activeAccount?.id],
@@ -103,6 +110,13 @@ export default function DemoCeller() {
     setMessages([{ role: "assistant", content: welcome }]);
   }, [businessProfile?.name, t.chatWelcome, messages.length]);
 
+  const resetDemoInteraction = () => {
+    resetDemoSessionId();
+    setLeadData({});
+    setSavedLead(null);
+    setCurrentLeadId(null);
+  };
+
   const handleLangChange = (newLang) => {
     setLang(newLang);
     const welcome = (translations[newLang]?.chatWelcome || "Hola").replace("Celler Demo", businessProfile?.name || "Demo Account");
@@ -110,9 +124,7 @@ export default function DemoCeller() {
     setLeadData({});
     setScenario("libre");
     setPendingExample(null);
-    resetDemoSessionId();
-    setSavedLead(null);
-    setCurrentLeadId(null);
+    resetDemoInteraction();
   };
 
   const handleAgentResponse = async (data, currentMessages) => {
@@ -166,18 +178,29 @@ export default function DemoCeller() {
   };
 
   const handleSectorChange = (nextSector) => {
+    if (!nextSector || nextSector === activeSector.id) return;
+
     setSelectedSector(nextSector);
+    setStoredSector(nextSector);
     clearStoredAccountSlug();
     setSelectedAccountSlug("");
+    resetDemoInteraction();
+
+    if (hasRouteSector) {
+      navigate(`/demo/${nextSector}`);
+      return;
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.set("sector", nextSector);
+    next.delete("account");
+    setSearchParams(next, { replace: false });
   };
 
   const handleAccountChange = (slug) => {
     setSelectedAccountSlug(slug);
     setStoredAccountSlug(slug);
-    resetDemoSessionId();
-    setLeadData({});
-    setSavedLead(null);
-    setCurrentLeadId(null);
+    resetDemoInteraction();
   };
 
   const sectorSpecific = sectorPresets[activeSector.id] || sectorPresets.neutral;

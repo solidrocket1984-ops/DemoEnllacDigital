@@ -17,3 +17,17 @@ test('resolveDemoAccount uses sector public fallback', () => {
   const result = resolveDemoAccount({ accounts, activeSector: 'winery' });
   assert.equal(result.account.slug, 'a');
 });
+
+test('resolveDemoAccount ignores stale explicit slug from another sector', () => {
+  const result = resolveDemoAccount({ accounts, activeSector: 'clinic', selectedAccountSlug: 'a' });
+  assert.equal(result.account.slug, 'c');
+});
+
+test('resolveDemoAccount picks default account per sector from settings', () => {
+  const result = resolveDemoAccount({
+    accounts,
+    activeSector: 'winery',
+    settings: [{ key: 'default_demo_account_winery', value: 'b' }],
+  });
+  assert.equal(result.account.slug, 'b');
+});

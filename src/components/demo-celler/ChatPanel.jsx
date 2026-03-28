@@ -9,6 +9,23 @@ function getAssistantText(data, fallback) {
   return data?.reply_text || data?.reply || data?.message || fallback;
 }
 
+
+function buildChatErrorMessage(error, fallbackMessage) {
+  const base = fallbackMessage || "Error de connexió amb l'assistent.";
+  switch (error?.code) {
+    case "NETWORK":
+      return `${base} (problema de red/CORS).`;
+    case "TIMEOUT":
+      return `${base} (timeout de backend).`;
+    case "BACKEND_4XX":
+      return `${base} (backend inválido / petición rechazada).`;
+    case "BACKEND_5XX":
+      return `${base} (backend caído temporalmente).`;
+    default:
+      return base;
+  }
+}
+
 export default function ChatPanel({
   t,
   lang,
@@ -84,10 +101,20 @@ export default function ChatPanel({
       if (onAgentResponse) onAgentResponse(data, [...outgoingMessages, { role: "assistant", content: assistantText }]);
       setRetryBuffer("");
     } catch (error) {
-      console.error("Agent request failed", { error, requestId, account: account?.slug, sector: sector?.id || sector });
+      console.error("Agent request failed", {
+        requestId,
+        account: account?.slug,
+        sector: sector?.id || sector,
+        code: error?.code,
+        status: error?.status,
+        url: error?.url,
+        detail: error?.detail,
+        message: error?.message,
+        stack: error?.stack,
+      });
       const fallback = t?.connectionError || "Error de connexió amb l'assistent.";
       const friendly = toFriendlyMessage(error) || fallback;
-      setLastError(friendly);
+      setLastError(buildChatErrorMessage(error, friendly));
     } finally {
       setLoading(false);
       inputRef.current?.focus();
