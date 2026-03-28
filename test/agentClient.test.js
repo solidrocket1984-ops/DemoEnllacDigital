@@ -37,3 +37,13 @@ test('postToAgent treats timeout as TIMEOUT', async () => {
   await assert.rejects(postToAgent({ agentConfig: baseConfig, payload: {}, requestId: 'r4' }), (err) => err.code === 'TIMEOUT');
   global.fetch = originalFetch;
 });
+
+test('postToAgent preserves BACKEND_5XX when all attempts fail with 5xx', async () => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({ ok: false, status: 503, headers: { get: () => 'application/json' }, text: async () => JSON.stringify({ message: 'down' }) });
+  await assert.rejects(
+    postToAgent({ agentConfig: { ...baseConfig, timeoutMs: 50 }, payload: {}, requestId: 'r5' }),
+    (err) => err.code === 'BACKEND_5XX' && String(err.detail || '').includes('HTTP 503')
+  );
+  global.fetch = originalFetch;
+});

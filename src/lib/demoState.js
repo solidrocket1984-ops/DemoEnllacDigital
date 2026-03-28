@@ -12,12 +12,16 @@ function safeNormalize(value) {
   return String(value || "").trim();
 }
 
+function normalizeLower(value) {
+  return safeNormalize(value).toLowerCase();
+}
+
 export function getStoredSector() {
   return safeStorage()?.getItem(STORAGE_KEYS.sector) || null;
 }
 
 export function setStoredSector(sector) {
-  const normalized = safeNormalize(sector).toLowerCase();
+  const normalized = normalizeLower(sector);
   if (!normalized) return;
   safeStorage()?.setItem(STORAGE_KEYS.sector, normalized);
 }
@@ -27,7 +31,7 @@ export function getStoredAccountSlug() {
 }
 
 export function setStoredAccountSlug(accountSlug) {
-  const normalized = safeNormalize(accountSlug).toLowerCase();
+  const normalized = normalizeLower(accountSlug);
   if (!normalized) return;
   safeStorage()?.setItem(STORAGE_KEYS.accountSlug, normalized);
 }
@@ -38,10 +42,29 @@ export function clearStoredAccountSlug() {
 
 export function resolveDemoUrlState({ routeSector, querySector, queryAccount, selectedSector, selectedAccountSlug }) {
   return {
-    routeSector: safeNormalize(routeSector).toLowerCase() || null,
-    querySector: safeNormalize(querySector).toLowerCase() || null,
-    queryAccount: safeNormalize(queryAccount).toLowerCase() || null,
-    selectedSector: safeNormalize(selectedSector).toLowerCase() || null,
-    selectedAccountSlug: safeNormalize(selectedAccountSlug).toLowerCase() || null,
+    routeSector: normalizeLower(routeSector) || null,
+    querySector: normalizeLower(querySector) || null,
+    queryAccount: normalizeLower(queryAccount) || null,
+    selectedSector: normalizeLower(selectedSector) || null,
+    selectedAccountSlug: normalizeLower(selectedAccountSlug) || null,
   };
+}
+
+export function buildDemoSearchParams({ currentSearch, routeSector, activeSectorId, activeAccountSlug }) {
+  const next = new URLSearchParams(currentSearch);
+  const normalizedRouteSector = normalizeLower(routeSector);
+  const normalizedActiveSector = normalizeLower(activeSectorId) || "neutral";
+  const normalizedActiveAccount = normalizeLower(activeAccountSlug) || "demo";
+
+  if (normalizedRouteSector) {
+    next.delete("sector");
+  } else {
+    next.set("sector", normalizedActiveSector);
+  }
+
+  next.set("account", normalizedActiveAccount);
+
+  const currentString = new URLSearchParams(currentSearch).toString();
+  const nextString = next.toString();
+  return { changed: currentString !== nextString, next };
 }

@@ -42,6 +42,28 @@ function toFriendlyMessage(error) {
   return "No s'ha pogut completar la consulta a l'agent.";
 }
 
+function resolveFinalErrorCode(codes = []) {
+  if (!codes.length) return "UNKNOWN";
+  if (codes.includes("BACKEND_4XX")) return "BACKEND_4XX";
+  if (codes.includes("BACKEND_5XX")) return "BACKEND_5XX";
+  if (codes.includes("TIMEOUT")) return "TIMEOUT";
+  if (codes.includes("NETWORK")) return "NETWORK";
+  if (codes.includes("NON_JSON")) return "NON_JSON";
+  return "UNKNOWN";
+}
+
+function formatAttempts(attempts = []) {
+  return attempts
+    .map((attempt) => {
+      const parts = [attempt.url || "unknown-url", attempt.code || "UNKNOWN"];
+      if (attempt.status) parts.push(`HTTP ${attempt.status}`);
+      if (attempt.message) parts.push(attempt.message);
+      if (attempt.detail) parts.push(String(attempt.detail));
+      return parts.join(" :: ");
+    })
+    .join(" | ");
+}
+
 export async function postToAgent({ agentConfig, payload, requestId }) {
   if (!agentConfig?.urls?.length) {
     throw mapAgentError({
@@ -79,7 +101,7 @@ export async function postToAgent({ agentConfig, payload, requestId }) {
           message: `${code === "BACKEND_5XX" ? "Error intern" : "Error de validació"} (${response.status})`,
         });
 
-        attempts.push(`${url}: ${backendError.message}`);
+        attempts.push({ code: backendError.code, status: backendError.status, url, detail: backendError.detail, message: backendError.message });
         if (response.status >= 500) continue;
         throw backendError;
       }
@@ -92,7 +114,7 @@ export async function postToAgent({ agentConfig, payload, requestId }) {
           detail: parsed.raw?.slice(0, 500),
           message: "Resposta no JSON del backend",
         });
-        attempts.push(`${url}: ${formatError.message}`);
+        attempts.push({ code: formatError.code, status: formatError.status, url, detail: formatError.detail, message: formatError.message });
         throw formatError;
       }
 
@@ -103,29 +125,27 @@ export async function postToAgent({ agentConfig, payload, requestId }) {
 
       if (isTimeoutError(rawError)) {
         const timeoutError = mapAgentError({ code: "TIMEOUT", url, detail: message, message: "Request timed out" });
-        attempts.push(`${url}: ${timeoutError.message}`);
+        attempts.push({ code: timeoutError.code, url, detail: timeoutError.detail, message: timeoutError.message });
         continue;
       }
 
       if (message.includes("Failed to fetch") || rawError?.name === "TypeError") {
         const networkError = mapAgentError({ code: "NETWORK", url, detail: message, message: "Failed to fetch" });
-        attempts.push(`${url}: ${networkError.message}`);
+        attempts.push({ code: networkError.code, url, detail: networkError.detail, message: networkError.message });
         continue;
       }
 
       if (rawError?.code) throw rawError;
-      attempts.push(`${url}: ${message}`);
+      attempts.push({ code: "UNKNOWN", url, detail: message, message: "Unknown request error" });
     }
   }
 
-  const lastAttempt = attempts[attempts.length - 1] || "unknown";
-  const inferredCode = lastAttempt.includes("timed out") ? "TIMEOUT" : lastAttempt.includes("Failed to fetch") ? "NETWORK" : "UNKNOWN";
-  const error = mapAgentError({
-    code: inferredCode,
-    detail: attempts.join(" | "),
-    message: toFriendlyMessage({ code: inferredCode }),
+  const finalCode = resolveFinalErrorCode(attempts.map((attempt) => attempt.code));
+  throw mapAgentError({
+    code: finalCode,
+    detail: formatAttempts(attempts),
+    message: toFriendlyMessage({ code: finalCode }),
   });
-  throw error;
 }
 
 export { toFriendlyMessage };
