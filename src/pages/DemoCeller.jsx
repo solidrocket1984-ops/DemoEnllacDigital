@@ -16,9 +16,9 @@ import MobileBar from "@/components/demo-celler/MobileBar";
 import { scenarioMap, translations } from "@/components/demo-celler/translations";
 import { brandConfig } from "@/config/brandConfig";
 import { sectorPresets } from "@/config/sectorPresets";
-import { clearStoredAccountSlug, getStoredAccountSlug, getStoredSector, setStoredAccountSlug, setStoredSector } from "@/lib/demoState";
+import { clearStoredAccountSlug, getStoredAccountSlug, getStoredSector, resolveDemoUrlState, setStoredAccountSlug, setStoredSector } from "@/lib/demoState";
 import { resolveDemoAccount } from "@/lib/demoAccountResolver";
-import { resolveSector } from "@/lib/sector";
+import { resolveSector } from "@/lib/sectorResolver";
 import { resetDemoSessionId } from "@/lib/useDemoSession";
 import { simulateExport, upsertLead } from "@/lib/leadService";
 import { useAuth } from "@/lib/AuthContext";
@@ -30,6 +30,7 @@ export default function DemoCeller() {
   const [searchParams, setSearchParams] = useSearchParams();
   const querySector = searchParams.get("sector");
   const queryAccount = searchParams.get("account");
+  const urlState = resolveDemoUrlState({ routeSector, querySector, queryAccount, selectedSector: getStoredSector(), selectedAccountSlug: getStoredAccountSlug() });
 
   const { user } = useAuth();
   const access = resolveClientAccess(user);
@@ -54,10 +55,10 @@ export default function DemoCeller() {
   const activeSector = useMemo(
     () =>
       resolveSector({
-        routeSector,
-        querySector,
+        routeSector: urlState.routeSector || routeSector,
+        querySector: urlState.querySector || querySector,
         selectedSector,
-        userAccessSector: access?.sector,
+        defaultSector: access?.sector,
         settings,
       }),
     [routeSector, querySector, selectedSector, access?.sector, settings]
@@ -69,7 +70,8 @@ export default function DemoCeller() {
         accounts: wineries,
         settings,
         activeSector: activeSector.id,
-        requestedAccountSlug: queryAccount || selectedAccountSlug,
+        requestedAccountSlug: urlState.queryAccount || queryAccount,
+        selectedAccountSlug,
       }),
     [wineries, settings, activeSector.id, queryAccount, selectedAccountSlug]
   );

@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Send, Loader2, AlertCircle } from "lucide-react";
 import ChatBubble from "./ChatBubble.jsx";
 import { buildAgentPayload } from "@/lib/agentPayload";
-import { postToAgent, resolveAgentConfig } from "@/lib/agentEndpointResolver";
+import { postToAgent, toFriendlyMessage } from "@/lib/agentClient";
+import { resolveAgentConfig } from "@/lib/agentEndpointResolver";
 
 function getAssistantText(data, fallback) {
   return data?.reply_text || data?.reply || data?.message || fallback;
@@ -84,9 +85,9 @@ export default function ChatPanel({
       setRetryBuffer("");
     } catch (error) {
       console.error("Agent request failed", { error, requestId, account: account?.slug, sector: sector?.id || sector });
-      const friendly = t?.connectionError || "Error de connexió amb l'assistent.";
-      setLastError(error.message || friendly);
-      appendAssistantMessage(`${friendly}\n\n(${error.message || "unknown_error"})`);
+      const fallback = t?.connectionError || "Error de connexió amb l'assistent.";
+      const friendly = toFriendlyMessage(error) || fallback;
+      setLastError(friendly);
     } finally {
       setLoading(false);
       inputRef.current?.focus();

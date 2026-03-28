@@ -33,81 +33,35 @@ export function resolveAgentConfig({ settings = [], account }) {
   const globalEndpoint = getSetting(settings, "agent_endpoint_url") || "";
   const endpointOverride = account?.agent_endpoint_override || "";
   const tokenOverride = account?.agent_token_override || "";
+  const timeoutMs = Number(getSetting(settings, "agent_timeout_ms") || 30000);
 
   const preferredEndpoint = endpointOverride || globalEndpoint;
   const urls = createCandidateUrls(preferredEndpoint);
 
   return {
     mode,
-    urls,
+    urls: urls.filter(isAbsoluteHttpUrl),
     endpointBase: normalizeBaseUrl(preferredEndpoint),
     token: tokenOverride || sharedToken,
+    timeoutMs: Number.isFinite(timeoutMs) ? timeoutMs : 30000,
   };
 }
 
-function timeoutSignal(timeoutMs = 15000) {
-  if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) return AbortSignal.timeout(timeoutMs);
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), timeoutMs);
-  return controller.signal;
-}
+export function buildAgentHeaders({ requestId, token, includeLegacyRequestHeader = true }) {
+  const headers = {
+    "Content-Type": "application/json",
+    "X-Request-Id": requestId,
+  };
 
-async function parseResponseBody(response) {
-  const rawText = await response.text();
-  if (!rawText) return { json: null, rawText: "" };
-  try {
-    return { json: JSON.parse(rawText), rawText };
-  } catch {
-    return { json: null, rawText };
-  }
-}
-
-export async function postToAgent({ agentConfig, payload, requestId }) {
-const headers = { "Content-Type": "application/json", "X-Request-Id": requestId };
-if (agentConfig.token) headers["X-Agent-Token"] = agentConfig.token;
-
-  if (!agentConfig.urls?.length) {
-    throw new Error("No hi ha cap endpoint d'agent configurat. Revisa Admin > Settings.");
+  if (includeLegacyRequestHeader) {
+    headers["X-Demo-Request-Id"] = requestId; // temporary compatibility
   }
 
-  const attempts = [];
-
-  for (const url of agentConfig.urls) {
-    if (!isAbsoluteHttpUrl(url)) continue;
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-        signal: timeoutSignal(18000),
-      });
-
-      const parsed = await parseResponseBody(response);
-
-      if (!response.ok) {
-        attempts.push(`HTTP ${response.status} @ ${url}`);
-        if (response.status >= 500) continue;
-        const reason = parsed.json?.message || parsed.rawText || `HTTP ${response.status}`;
-        throw new Error(`Error de l'agent (${response.status}): ${reason.slice(0, 240)}`);
-      }
-
-      if (!parsed.json) {
-        throw new Error("L'agent ha respost en format no JSON.");
-      }
-
-      return { data: parsed.json, usedUrl: url };
-    } catch (error) {
-      attempts.push(`${url}: ${error.message}`);
-      const isAbort = error.name === "AbortError";
-      if (isAbort) continue;
-      if (!String(error.message || "").includes("Failed to fetch")) {
-        if (!String(error.message || "").includes("HTTP 5")) {
-          throw error;
-        }
-      }
-    }
+  if (token) {
+    headers["X-Agent-Token"] = String(token).trim();
   }
 
-  throw new Error(`No s'ha pogut contactar amb l'agent. Intents: ${attempts.join(" | ")}`);
+  return headers;
 }
+
+export { createCandidateUrls, normalizeBaseUrl };

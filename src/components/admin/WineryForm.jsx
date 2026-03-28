@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import AdminLayout from "./AdminLayout";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supportedSectors } from "@/config/sectorPresets";
+import { textToList } from "@/lib/textToList";
 
 const defaultData = {
   nombre: "",
@@ -65,16 +66,8 @@ export default function WineryForm({ wineryId }) {
       return;
     }
 
-    let parsedPrompts = [];
+    let parsedPrompts = textToList(data.prompts_sugeridos);
     let parsedHero = null;
-
-    try {
-      parsedPrompts = JSON.parse(data.prompts_sugeridos || "[]");
-      if (!Array.isArray(parsedPrompts)) throw new Error();
-    } catch {
-      toast.error("prompts_sugeridos debe ser un JSON array válido");
-      return;
-    }
 
     if (data.hero_override?.trim()) {
       try {
@@ -150,7 +143,7 @@ export default function WineryForm({ wineryId }) {
         </div>
 
         <div className="bg-white border rounded-xl p-6 grid sm:grid-cols-2 gap-4">
-          <div className="sm:col-span-2"><Label>Prompts sugeridos (JSON array)</Label><Textarea rows={4} className="font-mono text-xs" value={data.prompts_sugeridos || "[]"} onChange={(e) => update("prompts_sugeridos", e.target.value)} /></div>
+          <div className="sm:col-span-2"><Label>Prompts sugeridos (líneas o bullets)</Label><Textarea rows={4} className="font-mono text-xs" value={data.prompts_sugeridos || "[]"} onChange={(e) => update("prompts_sugeridos", e.target.value)} /></div>
           <div className="sm:col-span-2"><Label>Hero override (JSON opcional)</Label><Textarea rows={4} className="font-mono text-xs" value={data.hero_override || ""} onChange={(e) => update("hero_override", e.target.value)} /></div>
           <div><Label>Endpoint override (opcional)</Label><Input value={data.agent_endpoint_override || ""} onChange={(e) => update("agent_endpoint_override", e.target.value)} placeholder="https://agent..." /></div>
           <div><Label>Token override (opcional)</Label><Input value={data.agent_token_override || ""} onChange={(e) => update("agent_token_override", e.target.value)} placeholder="Bearer token" /></div>

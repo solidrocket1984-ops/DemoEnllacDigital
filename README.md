@@ -1,6 +1,6 @@
 # DemoEnllacDigital
 
-Aplicación demo/public + panel admin compatible con Base44 y preparada para conectar con `enllac-agent`.
+Aplicación demo/public + panel admin para demos B2B, preparada para integración robusta con `enllac-agent`.
 
 ## Arranque local
 
@@ -16,83 +16,101 @@ VITE_BASE44_APP_ID=...
 VITE_BASE44_APP_BASE_URL=...
 ```
 
-## Rutas principales
+## Selección de sector y cliente demo
 
-- `/` inicio público
-- `/sectores/:sector` landing sectorial
-- `/demo` demo pública con selector de sector + cuenta demo
-- `/demo/:sector` demo anclada a sector
-- `?account=<slug>` selección de cliente demo por URL
+### URLs soportadas
+- `/demo`
+- `/demo/:sector`
+- `/demo/:sector?account=<slug>`
+- `/demo?sector=<sector>&account=<slug>`
 
-Ejemplo:
+### Prioridad de sector (centralizada en `src/lib/sectorResolver.js`)
+1. `:sector` de ruta.
+2. Query param `?sector=`.
+3. Selección manual del usuario (persistida).
+4. `default_sector` de `AppSettings`.
+5. Sector por defecto de acceso del usuario autenticado.
+6. Fallback `neutral`.
 
-- `/demo/professional_services?account=empresa-x`
+### Prioridad de cuenta demo (centralizada en `src/lib/demoAccountResolver.js`)
+1. `?account=<slug>` explícito.
+2. Cuenta seleccionada manualmente/persistida.
+3. `default_demo_account_<sector>` o `default_demo_account_slug` en `AppSettings`.
+4. Primera cuenta activa y pública del sector.
+5. Primera cuenta activa del sector.
+6. Fallback neutral.
 
-## Resolución de sector y cuenta demo
+> La app ya no depende de “la primera Winery pública activa” sin contexto sectorial.
 
-### Prioridad de sector
-1. `:sector` en ruta (`/demo/:sector`)
-2. query param `?sector=`
-3. selección manual (persistida en localStorage)
-4. sector de acceso de cliente autenticado
-5. `default_sector` en `AppSettings`
-6. fallback `neutral`
+## Configuración de cliente demo desde Admin
 
-### Prioridad de cuenta demo activa
-1. `?account=<slug>` explícito
-2. `default_demo_account_<sector>` o `default_demo_account_slug` en `AppSettings`
-3. primera cuenta activa + pública del sector
-4. primera cuenta activa del sector
-5. fallback neutral
+Se mantiene compatibilidad técnica con entidad `Winery`, pero la UI está orientada a **cuentas demo / clientes demo**.
 
-## Configuración del agente (`enllac-agent`)
+En **Admin > Accounts** puedes gestionar:
+- nombre visible, slug público, activa/inactiva, demo pública;
+- sector, prioridad demo;
+- claim, subtítulo, tono, descripción corta, propuesta de valor, CTA;
+- FAQs, reglas IA de recomendación y objeciones;
+- prompts sugeridos (texto/bullets);
+- hero override;
+- endpoint override y token override del agente;
+- idiomas disponibles e idioma por defecto.
 
-En **Admin > Settings**:
+## Integración con enllac-agent
 
-- `agent_endpoint_url`: URL base o URL completa (`/v1/chat` o `/chat`)
-- `agent_connection_mode`: `remote` o `mock`
-- `agent_shared_token`: token compartido opcional
+### Resolución de endpoint (`src/lib/agentEndpointResolver.js`)
+1. Override por cuenta demo (`agent_endpoint_override`).
+2. Endpoint global (`agent_endpoint_url`).
+3. Normalización de trailing slash.
+4. Preferencia por `/v1/chat`.
+5. Fallback automático a `/chat`.
 
-Resolución final:
+### Headers canónicos
+- `Content-Type: application/json`
+- `X-Request-Id: <uuid-like>`
+- `X-Agent-Token: <token>` (si existe token compartido/override)
+- `X-Demo-Request-Id` solo como compatibilidad temporal.
 
-1. endpoint override de cuenta demo (`agent_endpoint_override`)
-2. endpoint global (`agent_endpoint_url`)
-3. intento canónico en `/v1/chat`
-4. fallback automático a `/chat`
+> No se usa `Authorization` como header principal para este caso.
 
-Se envía `Authorization: Bearer ...` si existe token (override de cuenta o compartido global).
+### Errores y timeout (`src/lib/agentClient.js`)
+- Timeout configurable por `agent_timeout_ms` (default 30000 ms).
+- Clasificación explícita: `TIMEOUT`, `NETWORK` (incl. `Failed to fetch`/CORS), `BACKEND_4XX`, `BACKEND_5XX`, `NON_JSON`, `CONFIG`.
+- Retry limpio en UI sin duplicar mensajes basura en chat.
 
-## Configuración de cuenta demo (Admin > Accounts)
+## Payload al agente (`src/lib/agentPayload.js`)
 
-La entidad sigue siendo `Winery` por compatibilidad, pero en UI se gestiona como cuenta demo/cliente demo.
+El payload incluye:
+- `businessContext`, `offers`, `leadContext`, `conversation`, `metadata`.
+- Compatibilidad legacy: `winery`, `messages`.
 
-Campos clave:
+Normalizaciones clave:
+- `faqs`, `recommendation_rules`, `objection_rules`, `suggested_prompts` convertidos a arrays con `textToList`.
+- `lead.name`, `lead.phone`, `lead.email` no viajan como strings vacíos (`null` si falta).
+- `experiences` con shape estable y fallback por idioma.
 
-- `nombre`, `slug`, `activa`, `demo_publica`
-- `sector`, `prioridad_demo`
-- `claim`, `subtitulo`, `cta`
-- `tono_marca`, `descripcion_corta`, `propuesta_valor`
-- `faqs_texto`, `reglas_recomendacion`, `reglas_objeciones`
-- `idiomas_disponibles`, `idioma_defecto`
-- `prompts_sugeridos` (JSON array)
-- `hero_override` (JSON opcional)
-- `agent_endpoint_override`, `agent_token_override`
+## Parsing de texto a listas
 
-## Payload al backend
+`src/lib/textToList.js` soporta:
+- arrays ya válidos,
+- texto por líneas,
+- bullets (`-`, `•`, numerados),
+- limpieza de vacíos + trim,
+- límite razonable.
 
-La capa `src/lib/agentPayload.js` construye un payload robusto y compatible:
+## Tests y verificaciones
 
-- `sector`
-- `businessContext` (normalización de Winery)
-- `winery` (compatibilidad legado)
-- `offers` + `experiences`
-- `messages`
-- `metadata` (`account_slug`, `sector`, `source`)
+Se añadió base de tests ejecutable sin dependencias extra (`node:test`):
+- resolución de sector,
+- resolución de cuenta demo,
+- parser texto→array,
+- payload compatible (incl. email vacío),
+- manejo de timeout,
+- `Failed to fetch`,
+- parseo de backend JSON 4xx,
+- fallback `/v1/chat` -> `/chat`.
 
-## Compatibilidad mantenida
-
-- Auth Base44 actual (sin cambios de flujo)
-- Entidades existentes: `Winery`, `Experience`, `CapturedLead`, `AppSettings`
-- Rutas legacy con redirects existentes
-- Backend `enllac-agent` con compatibilidad `/v1/chat` + `/chat`
-
+```bash
+npm test
+npm run build
+```
