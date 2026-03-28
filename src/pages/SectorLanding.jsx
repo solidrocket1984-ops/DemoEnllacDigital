@@ -15,7 +15,7 @@ export default function SectorLanding() {
         <h1 className="mt-4 text-3xl font-bold text-slate-900">{sector.heroTitle}</h1>
         <p className="mt-3 text-slate-600 max-w-2xl">{sector.heroSubtitle}</p>
         <div className="mt-6 flex gap-3">
-          <Link to="/demo" className="px-4 py-2 rounded-xl bg-slate-900 text-white">{sector.cta}</Link>
+          <Link to={`/demo/${sector.id}`} className="px-4 py-2 rounded-xl bg-slate-900 text-white">{sector.cta}</Link>
           <Link to="/acceso" className="px-4 py-2 rounded-xl border border-slate-300">Accés client</Link>
         </div>
       </section>
