@@ -85,9 +85,7 @@ export async function upsertLead({ agentData, messages, winery, experiences, sce
   };
 
   if (existingLeadId) {
-    const current = await base44.entities.CapturedLead.get(existingLeadId);
-    const updatePayload = mergeWithoutEmpty(current, leadPayload);
-    return base44.entities.CapturedLead.update(existingLeadId, updatePayload);
+    return base44.entities.CapturedLead.update(existingLeadId, leadPayload);
   }
 
   return base44.entities.CapturedLead.create(leadPayload);
