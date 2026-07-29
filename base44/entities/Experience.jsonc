@@ -1,0 +1,86 @@
+{
+  "name": "Experience",
+  "type": "object",
+  "properties": {
+    "winery_id": {
+      "type": "string",
+      "description": "ID de la bodega a la que pertenece"
+    },
+    "experience_id": {
+      "type": "string",
+      "description": "ID \u00fanico de la experiencia para el agente"
+    },
+    "activa": {
+      "type": "boolean",
+      "default": true
+    },
+    "nombre_ca": {
+      "type": "string"
+    },
+    "nombre_es": {
+      "type": "string"
+    },
+    "nombre_en": {
+      "type": "string"
+    },
+    "descripcion_ca": {
+      "type": "string"
+    },
+    "descripcion_es": {
+      "type": "string"
+    },
+    "descripcion_en": {
+      "type": "string"
+    },
+    "precio": {
+      "type": "number"
+    },
+    "moneda": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "duracion": {
+      "type": "string"
+    },
+    "minimo_personas": {
+      "type": "number"
+    },
+    "maximo_personas": {
+      "type": "number"
+    },
+    "ideal_para": {
+      "type": "string"
+    },
+    "incluye": {
+      "type": "string"
+    },
+    "idiomas_disponibles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "apta_regalo": {
+      "type": "boolean",
+      "default": false
+    },
+    "apta_grupos": {
+      "type": "boolean",
+      "default": false
+    },
+    "familiar": {
+      "type": "boolean",
+      "default": false
+    },
+    "prioridad": {
+      "type": "number",
+      "default": 0,
+      "description": "Orden de recomendaci\u00f3n"
+    }
+  },
+  "required": [
+    "winery_id",
+    "experience_id",
+    "nombre_ca"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "DemoLead",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string",
+      "description": "Nom del contacte"
+    },
+    "celler": {
+      "type": "string",
+      "description": "Nom del celler"
+    },
+    "telefon": {
+      "type": "string",
+      "description": "Tel\u00e8fon de contacte"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email de contacte"
+    },
+    "missatge": {
+      "type": "string",
+      "description": "Missatge del lead"
+    },
+    "source": {
+      "type": "string",
+      "default": "demo-celler",
+      "description": "Origen del lead"
+    }
+  },
+  "required": [
+    "nom",
+    "email"
+  ]
+}

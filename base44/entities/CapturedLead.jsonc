@@ -1,0 +1,95 @@
+{
+  "name": "CapturedLead",
+  "type": "object",
+  "properties": {
+    "sessionId": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "default": "demo"
+    },
+    "wineryId": {
+      "type": "string"
+    },
+    "wineryName": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "scenario": {
+      "type": "string"
+    },
+    "leadName": {
+      "type": "string"
+    },
+    "leadPhone": {
+      "type": "string"
+    },
+    "leadEmail": {
+      "type": "string"
+    },
+    "peopleCount": {
+      "type": "number"
+    },
+    "desiredDate": {
+      "type": "string"
+    },
+    "detectedIntent": {
+      "type": "string"
+    },
+    "recommendedExperienceId": {
+      "type": "string"
+    },
+    "recommendedExperienceName": {
+      "type": "string"
+    },
+    "objectionDetected": {
+      "type": "string"
+    },
+    "leadStage": {
+      "type": "string"
+    },
+    "nextStep": {
+      "type": "string"
+    },
+    "askForContact": {
+      "type": "boolean"
+    },
+    "conversationSummary": {
+      "type": "string"
+    },
+    "conversationMessages": {
+      "type": "string"
+    },
+    "rawAgentResponse": {
+      "type": "string"
+    },
+    "destinationType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "database",
+        "crm",
+        "google_sheets"
+      ],
+      "default": "database"
+    },
+    "exportStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "exported",
+        "error"
+      ],
+      "default": "pending"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "sessionId"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "FAQItem",
+  "type": "object",
+  "properties": {
+    "winery_id": {
+      "type": "string"
+    },
+    "pregunta_ca": {
+      "type": "string"
+    },
+    "pregunta_es": {
+      "type": "string"
+    },
+    "pregunta_en": {
+      "type": "string"
+    },
+    "respuesta_ca": {
+      "type": "string"
+    },
+    "respuesta_es": {
+      "type": "string"
+    },
+    "respuesta_en": {
+      "type": "string"
+    },
+    "activa": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "winery_id",
+    "pregunta_ca",
+    "respuesta_ca"
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "name": "Winery",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "description": "Nombre de la bodega"
+    },
+    "slug": {
+      "type": "string",
+      "description": "Identificador \u00fanico para URLs"
+    },
+    "activa": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si est\u00e1 activa o no"
+    },
+    "demo_publica": {
+      "type": "boolean",
+      "default": false,
+      "description": "Si es la bodega mostrada en la demo p\u00fablica"
+    },
+    "telefono": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "web": {
+      "type": "string"
+    },
+    "whatsapp": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "idioma_defecto": {
+      "type": "string",
+      "enum": [
+        "ca",
+        "es",
+        "en"
+      ],
+      "default": "ca"
+    },
+    "idiomas_disponibles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "ca",
+        "es",
+        "en"
+      ]
+    },
+    "historia_breve": {
+      "type": "string"
+    },
+    "descripcion_corta": {
+      "type": "string"
+    },
+    "tono_marca": {
+      "type": "string"
+    },
+    "estilo_respuesta": {
+      "type": "string"
+    },
+    "publico_ideal": {
+      "type": "string"
+    },
+    "tipo_experiencia_principal": {
+      "type": "string"
+    },
+    "propuesta_valor": {
+      "type": "string"
+    },
+    "horarios": {
+      "type": "string"
+    },
+    "politica_reservas": {
+      "type": "string"
+    },
+    "politica_cancelacion": {
+      "type": "string"
+    },
+    "parking": {
+      "type": "string"
+    },
+    "accesibilidad": {
+      "type": "string"
+    },
+    "politica_ninos": {
+      "type": "string"
+    },
+    "politica_mascotas": {
+      "type": "string"
+    },
+    "como_llegar": {
+      "type": "string"
+    },
+    "temporadas_especiales": {
+      "type": "string"
+    },
+    "acepta_eventos_privados": {
+      "type": "boolean",
+      "default": false
+    },
+    "acepta_regalos": {
+      "type": "boolean",
+      "default": false
+    },
+    "acepta_grupos": {
+      "type": "boolean",
+      "default": false
+    },
+    "acepta_empresas": {
+      "type": "boolean",
+      "default": false
+    },
+    "faqs_texto": {
+      "type": "string",
+      "description": "Bloque de FAQs en texto libre"
+    },
+    "reglas_recomendacion": {
+      "type": "string"
+    },
+    "reglas_objeciones": {
+      "type": "string"
+    },
+    "cuando_pedir_contacto": {
+      "type": "string"
+    },
+    "cuando_cerrar_reserva": {
+      "type": "string"
+    },
+    "que_evitar": {
+      "type": "string"
+    },
+    "como_sonar": {
+      "type": "string"
+    },
+    "que_destacar_primero": {
+      "type": "string"
+    },
+    "que_hacer_sin_info": {
+      "type": "string"
+    },
+    "historia_ampliada": {
+      "type": "string"
+    },
+    "detalles_producto": {
+      "type": "string"
+    },
+    "notas_internas": {
+      "type": "string"
+    },
+    "argumentos_venta": {
+      "type": "string"
+    },
+    "objeciones_frecuentes": {
+      "type": "string"
+    },
+    "info_campanas": {
+      "type": "string"
+    },
+    "info_maridajes": {
+      "type": "string"
+    },
+    "info_tienda": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nombre",
+    "slug"
+  ]
+}
